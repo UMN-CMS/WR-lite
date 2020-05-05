@@ -5,9 +5,11 @@ This shiny new repository should serve as a helpful launch pad for a WR analysis
 
 *Instructions:*
 
-In an area setup for CMSSW run:
+On a machine setup for CMSSW (in your favorite folder) run:
 
-```cmsrel CMSSW_10_4_0_patch1
+```
+source /local/grid/cmssoft/cms/cmsset_default.sh
+cmsrel CMSSW_10_4_0_patch1
 cd CMSSW_10_4_0_patch1/src/
 cmsenv
 mkdir ExoAnalysis
