@@ -12,6 +12,6 @@ cd CMSSW_10_4_0_patch1/src/
 cmsenv
 mkdir ExoAnalysis
 cd ExoAnalysis
-git clone https://github.com/UMN-CMS/WR-lite.git
+git clone git@github.com:UMN-CMS/WR-lite.git
 cd ..
 scram b -j 8
