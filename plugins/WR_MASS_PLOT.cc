@@ -4,9 +4,7 @@
 // Class:      WR_MASS_PLOT
 //
 /**\class WR_MASS_PLOT WR_MASS_PLOT.cc ExoAnalysis/WR_MASS_PLOT/plugins/WR_MASS_PLOT.cc
-
  Description: [one line class summary]
-
  Implementation:
      [Notes on implementation]
 */
@@ -77,6 +75,9 @@ class WR_MASS_PLOT : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 
       TH1D * subMuJJhisto;
       TH1D * l2MuJJhisto;
+	  
+      TH1D * nMinusOneHisto;
+      TH1D * totalEventsHisto;
 
       edm::EDGetTokenT<TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
       edm::EDGetToken m_genParticleToken;
@@ -114,6 +115,17 @@ WR_MASS_PLOT::WR_MASS_PLOT(const edm::ParameterSet& iConfig)
 
   subMuJJhisto = fs->make<TH1D>("subMuJJhisto" , "Sublead Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
   l2MuJJhisto = fs->make<TH1D>("l2MuJJhisto" , "Lepton 2 Matched Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
+
+  nMinusOneHisto = fs->make<TH1D>("nMinusOneHisto", "n-1 Plot", 6, 1, 6);
+  totalEventsHisto = fs->make<TH1D>("totalEventsHisto", "total Events", 5, 0, 2);
+
+  nMinusOneHisto->GetXaxis()->SetBinLabel(1,"jet pt > 40 GeV");
+  nMinusOneHisto->GetXaxis()->SetBinLabel(2,"jet |eta| < 2.4");
+  nMinusOneHisto->GetXaxis()->SetBinLabel(3,"lepton mass > 200 GeV");
+  nMinusOneHisto->GetXaxis()->SetBinLabel(4,"dR > 0.4");
+  nMinusOneHisto->GetXaxis()->SetBinLabel(5,"leading l pt > 60 GeV");
+  nMinusOneHisto->GetXaxis()->SetBinLabel(6,"subleading l pt > 53 GeV");
+
 
 }
 
@@ -157,6 +169,8 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 //STATUS: 23 PDGID: -2 MOTHER: 9900012
 //
 
+  const char *label[6]  = {"jet pt > 40 GeV","jet |eta| < 2.4","lepton mass > 200 GeV","dR > 0.4","leading l pt > 60 GeV", "subleading l pt > 53 GeV"};
+
   for (std::vector<reco::GenParticle>::const_iterator iParticle = genParticles->begin(); iParticle != genParticles->end(); iParticle++) {
     if( ! iParticle->isHardProcess() ) continue;  //ONLY HARD PROCESS AND NOT INCOMING
     if( iParticle->status() == 21 ) continue;
@@ -196,10 +210,104 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     return;  
   }
+  
+  
+  int nMinusOne[6] = {};
+  
+  //decay jets have transverse momentum greater than 400 GeV
+  if (decayQuarks[0]->pt() <= 40 || decayQuarks[1]->pt() <= 40){
+	nMinusOne[0] = 1;
+  }
+  
+  //decay jets have |eta| < 2.4 
+  if (decayQuarks[0]->eta() >= 2.4 || decayQuarks[0]->eta() <= -2.4 || decayQuarks[1]->eta() >= 2.4 || decayQuarks[1]->eta() <= -2.4){
+	nMinusOne[1] = 1;
+  }
+  
+  //  invariant mass of 2 leptons > 400 GeV
+  if ((lepton1->p4()+lepton2->p4()).mass()<=200){
+  	nMinusOne[2] = 1;
+  }
+  
+  // check dR > .4 for particle combos
+  double lepton1lepton2dr2 = dR2(lepton1->eta(), lepton2->eta(), lepton1->phi(), lepton2->phi());
+  double lepton1quark1dr2 = dR2(lepton1->eta(), decayQuarks[0]->eta(), lepton1->phi(), decayQuarks[0]->phi());
+  double lepton1quark2dr2 = dR2(lepton1->eta(), decayQuarks[1]->eta(), lepton1->phi(), decayQuarks[1]->phi());
+  double lepton2quark1dr2 = dR2(lepton2->eta(), decayQuarks[0]->eta(), lepton2->phi(), decayQuarks[0]->phi());
+  double lepton2quark2dr2 = dR2(lepton2->eta(), decayQuarks[1]->eta(), lepton2->phi(), decayQuarks[1]->phi());
+  double quark1quark2dr2 = dR2(decayQuarks[0]->eta(), decayQuarks[1]->eta(), decayQuarks[0]->phi(), decayQuarks[1]->phi());
+ 
+  if(lepton1lepton2dr2 <=.16 || lepton1quark1dr2 <=.16 || lepton1quark2dr2 <=.16 || lepton2quark1dr2 <=.16 || lepton2quark2dr2 <=.16 || quark1quark2dr2 <=.16){
+	nMinusOne[3] = 1;
+  }
+  
+  totalEventsHisto->Fill(1);
+
   if (lepton1->pt() > lepton2->pt()){
+	//check that leading lepton has pt >60, sub leading pt > 53
+    if(lepton1->pt()<=60){
+		nMinusOne[4] = 1;
+	}
+	if(lepton2->pt()<=53){
+	    nMinusOne[5] = 1;
+	}
+	
+	int total = 0;
+	for(int n =0; n<6; n++){
+		total+=nMinusOne[n];
+	}
+	
+	if(total == 1){
+		for(int n =0; n<6; n++){
+			if(nMinusOne[n] == 1){
+				nMinusOneHisto->Fill(label[n],0.0004);
+			}
+		}
+	}
+	
+	if(total > 0){
+		return;
+	}
+	else{
+		for(int n =0; n<6; n++){
+			nMinusOneHisto->Fill(label[n],0.0004);
+		}
+	}
+	
     subLqqHisto->Fill((lepton2->p4() + decayQuarks[0]->p4() + decayQuarks[1]->p4()).mass());
   } else {
-    subLqqHisto->Fill((lepton1->p4() + decayQuarks[0]->p4() + decayQuarks[1]->p4()).mass());
+    
+	//check that leading lepton has pt >60, sub leading pt > 53
+    if(lepton2->pt()<=60){
+		nMinusOne[4] = 1;
+	}
+	if(lepton1->pt()<=53){
+	    nMinusOne[5] = 1;
+	}
+	
+	int total = 0;
+	for(int n =0; n<6; n++){
+		total+=nMinusOne[n];
+	}
+	
+	if(total == 1){
+		for(int n =0; n<6; n++){
+			if(nMinusOne[n] == 1){
+				nMinusOneHisto->Fill(label[n],0.0004);
+			}
+		}
+	}
+	
+	if(total > 0){
+		return;
+	}
+	else{
+		for(int n =0; n<6; n++){
+			nMinusOneHisto->Fill(label[n],0.0004);
+		}
+	}
+	
+	subLqqHisto->Fill((lepton1->p4() + decayQuarks[0]->p4() + decayQuarks[1]->p4()).mass());
   }
   l1qqHisto->Fill((lepton1->p4() + decayQuarks[0]->p4() + decayQuarks[1]->p4()).mass());
   l2qqHisto->Fill((lepton2->p4() + decayQuarks[0]->p4() + decayQuarks[1]->p4()).mass());
