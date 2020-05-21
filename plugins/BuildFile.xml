@@ -5,15 +5,16 @@
 <use name="FWCore/ServiceRegistry"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="CommonTools/Utils"/>
-<use name="CommonTools/TriggerUtils"/>
 <use name="DataFormats/HepMCCandidate"/>
 <use name="DataFormats/JetReco"/>
 <use name="DataFormats/MuonReco"/>
 <use name="DataFormats/PatCandidates"/>
 <use name="DataFormats/Math"/>
-<use name="fastjet"/>
-<use name="fastjet-contrib"/>
 <use name="SimDataFormats/GeneratorProducts"/>
-<export>
-   <lib name="1"/>
-</export>
+<use name="BaconAna/DataFormats"/>
+<use name="ExoAnalysis/WR-lite"/>
+<use name="DataFormats/CLHEP"/>
+<use name="CondFormats/JetMETObjects"/>
+<use name="JetMETCorrections/Objects"/>
+<use name="JetMETCorrections/Modules"/>
+<flags EDM_PLUGIN="1"/>
