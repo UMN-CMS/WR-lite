@@ -2,10 +2,12 @@
 #define eventHistos_h
 
 
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 
 //ROOT CLASSES
-#include "TH1.h"
+#include "TH1D.h"
 //C++ CLASSES
 #include <iostream>
 //LOCAL CLASSES
@@ -33,18 +35,18 @@ class eventHistos {
 
   //GEN PLOTS
    
-  TH1D * l1qqHisto;
-  TH1D * l2qqHisto;
-  TH1D * llqqHisto;
-  TH1D * subLqqHisto;
+  TH1D * m_l1qqHisto;
+  TH1D * m_l2qqHisto;
+  TH1D * m_llqqHisto;
+  TH1D * m_subLqqHisto;
 
-  TH1D * subMuJJhisto;
-  TH1D * l2MuJJhisto;
+  TH1D * m_subMuJJhisto;
+  TH1D * m_l2MuJJhisto;
   
-  TH1D * subElectronJJhisto;
-  TH1D * l2ElectronJJhisto;
+  TH1D * m_subElectronJJhisto;
+  TH1D * m_l2ElectronJJhisto;
   
-  TH1D * nMinusOneHisto;
+  TH1D * m_nMinusOneHisto;
    
 };
 
