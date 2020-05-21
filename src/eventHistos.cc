@@ -1,11 +1,13 @@
 //C++ CLASSES
 #include <iostream>
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
 ////LOCAL CLASSES
 #include "ExoAnalysis/WR-lite/interface/eventBits.h"
 #include "ExoAnalysis/WR-lite/interface/eventHistos.h"
 
-#include "TH1.h"
+#include "TH1D.h"
 
 
 
