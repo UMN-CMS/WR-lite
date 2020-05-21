@@ -129,3 +129,4 @@ void eventBits::clear() {
   subElectronMatchedJet1Jet2Mass = -10000.0;
   matchedElectronMatchedJet1Jet2Mass = -10000.0;
 }
+
