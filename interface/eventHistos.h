@@ -57,6 +57,7 @@ class eventHistos {
 
 	TH1D * m_leptonHisto;
 	TH1D * m_countHisto;
+	TH1D * m_correctNNHisto;
 
 	TH1D * m_jetjetMassHisto;
 	TH1D * m_matchedL1MassHisto;
@@ -86,31 +87,68 @@ class eventHistos {
 	TH2D * m_lowR2ElectronHisto;
 	TH2D * m_highR2MuonHisto;
 	TH2D * m_highR2ElectronHisto;
+	
+	TH2D * m_NNResolvedMuonHisto;
+	TH2D * m_NNResolvedElectronHisto;
+	TH2D * m_notNNResolvedMuonHisto;
+	TH2D * m_notNNResolvedElectronHisto;
 
-  
+	TH2D * m_NNLowMidMuonHisto;
+	TH2D * m_NNLowMidElectronHisto;
+	TH2D * m_notNNLowMidMuonHisto;
+	TH2D * m_notNNLowMidElectronHisto;
+	
+	TH2D * m_NNMidMuonHisto;
+	TH2D * m_NNMidElectronHisto;
+	TH2D * m_notNNMidMuonHisto;
+	TH2D * m_notNNMidElectronHisto;
+
+	TH2D * m_NNHighMidMuonHisto;
+	TH2D * m_NNHighMidElectronHisto;
+	TH2D * m_notNNHighMidMuonHisto;
+	TH2D * m_notNNHighMidElectronHisto;
+	
+	TH2D * m_NNSuperResolvedMuonHisto;
+	TH2D * m_NNSuperResolvedElectronHisto;
+	TH2D * m_notNNSuperResolvedMuonHisto;
+	TH2D * m_notNNSuperResolvedElectronHisto;
+
+
 	TH1D * m_muonEtaHisto1;
 	TH1D * m_muonPhiHisto1;
 	TH1D * m_muonDPhiHisto1;
 	TH1D * m_muonDRHisto1;
 	TH1D * m_muonPtHisto1;
+	TH1D * m_muonPtHisto1Scaled;
+	TH1D * m_muonNMassHisto1;
+	TH1D * m_muon1SphericityHisto; 
 
 	TH1D * m_muonEtaHisto2;
 	TH1D * m_muonPhiHisto2;
 	TH1D * m_muonDPhiHisto2;
 	TH1D * m_muonDRHisto2;
 	TH1D * m_muonPtHisto2;
+	TH1D * m_muonPtHisto2Scaled;
+	TH1D * m_muonNMassHisto2;
+	TH1D * m_muon2SphericityHisto; 
 	
 	TH1D * m_electronEtaHisto1;
 	TH1D * m_electronPhiHisto1;
 	TH1D * m_electronDPhiHisto1;
 	TH1D * m_electronDRHisto1;
 	TH1D * m_electronPtHisto1;
+	TH1D * m_electronPtHisto1Scaled;
+	TH1D * m_electronNMassHisto1;
+	TH1D * m_electron1SphericityHisto;
 
 	TH1D * m_electronEtaHisto2;
 	TH1D * m_electronPhiHisto2;
 	TH1D * m_electronDPhiHisto2;
 	TH1D * m_electronDRHisto2;
 	TH1D * m_electronPtHisto2;
+	TH1D * m_electronPtHisto2Scaled;
+	TH1D * m_electronNMassHisto2;
+	TH1D * m_electron2SphericityHisto;
 	
 	TH1D * m_muonEtaHisto1WR;
 	TH1D * m_muonPhiHisto1WR;
@@ -172,6 +210,15 @@ class eventHistos {
 	TH1D * m_muonDRHisto2L;
 	TH1D * m_muonPtHisto2L;
 	
+	TH1D * m_muonEtaHistoNN;
+	TH1D * m_muonPhiHistoNN;
+	TH1D * m_muonDPhiHistoNN;
+	TH1D * m_muonDRHistoNN;
+	TH1D * m_muonPtHistoNN;
+	TH1D * m_muonSphericityHistoNN;
+	TH1D * m_muonEtaHistoWRNN;
+	TH1D * m_muonNMassHistoNN;
+	
 	TH1D * m_electronEtaHisto1L;
 	TH1D * m_electronPhiHisto1L;
 	TH1D * m_electronDPhiHisto1L;
@@ -184,7 +231,15 @@ class eventHistos {
 	TH1D * m_electronDRHisto2L;
 	TH1D * m_electronPtHisto2L;
 	
-  
+	TH1D * m_electronEtaHistoNN;
+	TH1D * m_electronPhiHistoNN;
+	TH1D * m_electronDPhiHistoNN;
+	TH1D * m_electronDRHistoNN;
+	TH1D * m_electronPtHistoNN;
+	TH1D * m_electronSphericityHistoNN;
+	TH1D * m_electronEtaHistoWRNN;
+	TH1D * m_electronNMassHistoNN;
+
 
    
 };
