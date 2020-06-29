@@ -15,6 +15,29 @@ eventBits::eventBits() {
 	mixedLeptons = false;
 	passedElectronReco = false;
 	passedMuonReco = false;
+	correctNN = false;
+	
+	nnResolvedPickedLeadElectron = false;
+	nnResolvedPickedLeadMuon = false;
+	nnLowMidPickedLeadElectron = false;
+	nnLowMidPickedLeadMuon = false;
+	nnMidPickedLeadElectron = false;
+	nnHighMidPickedLeadMuon = false;
+	nnHighMidPickedLeadElectron = false;
+	nnMidPickedLeadMuon = false;	
+	nnSuperResolvedPickedLeadElectron = false;
+	nnSuperResolvedPickedLeadMuon = false;
+	
+	nnResolvedPickedSubLeadElectron = false;
+	nnResolvedPickedSubLeadMuon = false;
+	nnLowMidPickedSubLeadElectron = false;
+	nnLowMidPickedSubLeadMuon = false;
+	nnMidPickedSubLeadElectron = false;
+	nnMidPickedSubLeadMuon = false;
+	nnHighMidPickedSubLeadMuon = false;
+	nnHighMidPickedSubLeadElectron = false;	
+	nnSuperResolvedPickedSubLeadElectron = false;
+	nnSuperResolvedPickedSubLeadMuon = false;
 
 	quark1Eta = -10000.0;
 	quark1Phi = -10000.0;
@@ -201,6 +224,40 @@ eventBits::eventBits() {
 	match2MuonDPhiL2 = -10000.0;
 	match2MuonDRL2 = -10000.0;
 	match2MuonPtL2 = -10000.0;
+	
+	match2MuonEtaL2 = -10000.0;
+	match2MuonPhiL2 = -10000.0;
+	match2MuonDPhiL2 = -10000.0;
+	match2MuonDRL2 = -10000.0;
+	match2MuonPtL2 = -10000.0;
+
+	sphericityElectron1 = -10000.0;
+	sphericityMuon1 = -10000.0;
+	sphericityElectron2 = -10000.0;
+	sphericityMuon2 = -10000.0;
+	
+	sphericitySubElectron = -10000.0;
+	sphericityLeadElectron = -10000.0;
+	sphericitySubMuon = -10000.0;
+	sphericityLeadMuon = -10000.0;
+	
+	subRecoElectronDPhi = -10000.0;
+	subRecoElectronDR = -10000.0;
+	leadRecoElectronDPhi = -10000.0;
+	leadRecoElectronDR = -10000.0;
+
+	subRecoMuonDPhi = -10000.0;
+	subRecoMuonDR = -10000.0;
+	leadRecoMuonDPhi = -10000.0;
+	leadRecoMuonDR = -10000.0;
+	
+	WRMass = -10000.0;
+	NMass = -10000.0;
+	
+	leadRecoElectronEtaWR = -10000.0;
+	subRecoElectronEtaWR = -10000.0;
+	leadRecoMuonEtaWR = -10000.0;
+	subRecoMuonEtaWR = -10000.0;
 }
 
 void eventBits::clear() {
@@ -213,7 +270,30 @@ void eventBits::clear() {
 	mixedLeptons = false;
 	passedElectronReco = false;
 	passedMuonReco = false;
-
+	correctNN = false;
+	
+	nnResolvedPickedLeadElectron = false;
+	nnResolvedPickedLeadMuon = false;
+	nnLowMidPickedLeadElectron = false;
+	nnLowMidPickedLeadMuon = false;
+	nnMidPickedLeadElectron = false;
+	nnMidPickedLeadMuon = false;
+	nnHighMidPickedLeadMuon = false;
+	nnHighMidPickedLeadElectron = false;	
+	nnSuperResolvedPickedLeadElectron = false;
+	nnSuperResolvedPickedLeadMuon = false;
+	
+	nnResolvedPickedSubLeadElectron = false;
+	nnResolvedPickedSubLeadMuon = false;
+	nnLowMidPickedSubLeadElectron = false;
+	nnLowMidPickedSubLeadMuon = false;
+	nnMidPickedSubLeadElectron = false;
+	nnMidPickedSubLeadMuon = false;	
+	nnHighMidPickedSubLeadMuon = false;
+	nnHighMidPickedSubLeadElectron = false;
+	nnSuperResolvedPickedSubLeadElectron = false;
+	nnSuperResolvedPickedSubLeadMuon = false;
+	
 	nMinusOnePassElectron.clear();
 	nMinusOneFailElectron.clear();
 	nMinusOnePassMuon.clear();
@@ -404,6 +484,34 @@ void eventBits::clear() {
 	match2MuonDRL2 = -10000.0;
 	match2MuonPtL2 = -10000.0;
 	
+	sphericityElectron1 = -10000.0;
+	sphericityMuon1 = -10000.0;
+	sphericityElectron2 = -10000.0;
+	sphericityMuon2 = -10000.0;
+	
+	sphericitySubElectron = -10000.0;
+	sphericityLeadElectron = -10000.0;
+	sphericitySubMuon = -10000.0;
+	sphericityLeadMuon = -10000.0;
+	
+	subRecoElectronDPhi = -10000.0;
+	subRecoElectronDR = -10000.0;
+	leadRecoElectronDPhi = -10000.0;
+	leadRecoElectronDR = -10000.0;
+
+	subRecoMuonDPhi = -10000.0;
+	subRecoMuonDR = -10000.0;
+	leadRecoMuonDPhi = -10000.0;
+	leadRecoMuonDR = -10000.0;
+	
+	WRMass = -10000.0;
+	NMass = -10000.0;
+	
+	leadRecoElectronEtaWR = -10000.0;
+	subRecoElectronEtaWR = -10000.0;
+	leadRecoMuonEtaWR = -10000.0;
+	subRecoMuonEtaWR = -10000.0;
+	
 }
 
 void eventBits::checkCutsElectron() {
@@ -414,7 +522,7 @@ void eventBits::checkCutsElectron() {
 	//decay jets have transverse momentum greater than 400 GeV
 	if (leadJetRecoPt <= 40 || subJetRecoPt <= 40){
 		nMinusOneFailElectron.push_back(label[0]);
-		std::cout << label[0] << std::endl;
+		//std::cout << label[0] << std::endl;
 	} else {
 		nMinusOnePassElectron.push_back(label[0]);
 	}
@@ -422,7 +530,7 @@ void eventBits::checkCutsElectron() {
 	//decay jets have |eta| < 2.4 
 	if (leadJetRecoEta >= 2.4 || leadJetRecoEta <= -2.4 || subJetRecoEta >= 2.4 || subJetRecoEta <= -2.4){
 		nMinusOneFailElectron.push_back(label[1]);
-		std::cout << label[1] << std::endl;
+		//std::cout << label[1] << std::endl;
 	} else {
 		nMinusOnePassElectron.push_back(label[1]);
 	}
