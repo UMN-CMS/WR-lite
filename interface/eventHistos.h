@@ -1,247 +1,277 @@
-#ifndef eventHistos_h
-#define eventHistos_h
+#ifndef eventBits_h
+#define eventBits_h
 
-
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "CommonTools/Utils/interface/TFileDirectory.h"
-
-//ROOT CLASSES
-#include "TH1D.h"
-#include "TH2D.h"
-//C++ CLASSES
+#include <stdint.h>
+#include <list>
+#include <string>
 #include <iostream>
-//LOCAL CLASSES
-#include "eventHistos.h"
-#include "eventBits.h"
 
+class eventBits {
 
-class eventHistos {
-	public:
-	eventHistos();
-	void book(TFileDirectory histoFolder);
-	void fill(eventBits& event);
+public:
 
+	eventBits();
+	void clear();
+	void checkCutsElectron();
+	void checkCutsMuon();
 
+	//EVENT WEIGHT
+	double eventWeight;
+	double count;
 
-	private:
-	void fillElectron(eventBits& event);
-	void fillMuon(eventBits& event);
-	void fillNMinusOnePassElectron(eventBits& event);
-	void fillNMinusOneFailElectron(eventBits& event);
-	void fillNMinusOnePassMuon(eventBits& event);
-	void fillNMinusOneFailMuon(eventBits& event);
+	//EVENT VALUES
+	bool twoElectrons;
+	bool twoMuons;
+	bool mixedLeptons;
+	bool passedElectronReco;
+	bool passedMuonReco;
+	bool correctNN;
+	bool extraLeptons;
 
-
-	TFileDirectory m_histoFolder;
-
-	//METADATA
-
-
-	//GEN PLOTS
-
-	TH1D * m_l1qqHisto;
-	TH1D * m_l2qqHisto;
-	TH1D * m_llqqHisto;
-	TH1D * m_subLqqHisto;
-
-	TH1D * m_subMuJJhisto;
-	TH1D * m_l2MuJJhisto;
-
-	TH1D * m_subElectronJJhisto;
-	TH1D * m_l2ElectronJJhisto;
-
-	TH1D * m_nMinusOneHisto;
-	TH1D * m_nMinusOneElectronHisto;
-	TH1D * m_nMinusOneMuonHisto;
-
-	TH1D * m_leptonHisto;
-	TH1D * m_countHisto;
-	TH1D * m_correctNNHisto;
-
-	TH1D * m_jetjetMassHisto;
-	TH1D * m_matchedL1MassHisto;
-	TH1D * m_matchedL2MassHisto;
-	TH1D * m_jetjetMassErrorsHisto;
-	TH1D * m_matchedL1MassErrorsHisto;
-	TH1D * m_matchedL2MassErrorsHisto;   
-
-	TH2D * m_lepton2Histo;
-
-	TH2D * m_matchedMuon1MassHisto;
-	TH2D * m_matchedElectron1MassHisto;
-	TH2D * m_matchedMuon2MassHisto;
-	TH2D * m_matchedElectron2MassHisto;
-
-	TH2D * m_matchedMuonHisto;
-	TH2D * m_matchedElectronHisto;
-	TH2D * m_subLeadMuonHisto;
-	TH2D * m_subLeadElectronHisto;
-	TH2D * m_leadMuonHisto;
-	TH2D * m_leadElectronHisto;
-	TH2D * m_lowEtaMuonHisto;
-	TH2D * m_lowEtaElectronHisto;
-	TH2D * m_highEtaMuonHisto;
-	TH2D * m_highEtaElectronHisto;
-	TH2D * m_lowR2MuonHisto;
-	TH2D * m_lowR2ElectronHisto;
-	TH2D * m_highR2MuonHisto;
-	TH2D * m_highR2ElectronHisto;
+	bool nnResolvedPickedLeadElectron;
+	bool nnResolvedPickedLeadMuon;
+	bool nnLowMidPickedLeadElectron;
+	bool nnLowMidPickedLeadMuon;
+	bool nnMidPickedLeadElectron;
+	bool nnMidPickedLeadMuon;
+	bool nnHighMidPickedLeadElectron;
+	bool nnHighMidPickedLeadMuon;	
+	bool nnSuperResolvedPickedLeadElectron;
+	bool nnSuperResolvedPickedLeadMuon;
 	
-	TH2D * m_NNResolvedMuonHisto;
-	TH2D * m_NNResolvedElectronHisto;
-	TH2D * m_notNNResolvedMuonHisto;
-	TH2D * m_notNNResolvedElectronHisto;
+	bool nnResolvedPickedSubLeadElectron;
+	bool nnResolvedPickedSubLeadMuon;
+	bool nnLowMidPickedSubLeadElectron;
+	bool nnLowMidPickedSubLeadMuon;
+	bool nnMidPickedSubLeadElectron;
+	bool nnMidPickedSubLeadMuon;
+	bool nnHighMidPickedSubLeadElectron;
+	bool nnHighMidPickedSubLeadMuon;	
+	bool nnSuperResolvedPickedSubLeadElectron;
+	bool nnSuperResolvedPickedSubLeadMuon;
 
-	TH2D * m_NNLowMidMuonHisto;
-	TH2D * m_NNLowMidElectronHisto;
-	TH2D * m_notNNLowMidMuonHisto;
-	TH2D * m_notNNLowMidElectronHisto;
-	
-	TH2D * m_NNMidMuonHisto;
-	TH2D * m_NNMidElectronHisto;
-	TH2D * m_notNNMidMuonHisto;
-	TH2D * m_notNNMidElectronHisto;
+	std::list<std::string> nMinusOnePassElectron;
+	std::list<std::string> nMinusOneFailElectron;
+	std::list<std::string> nMinusOnePassMuon;
+	std::list<std::string> nMinusOneFailMuon;
 
-	TH2D * m_NNHighMidMuonHisto;
-	TH2D * m_NNHighMidElectronHisto;
-	TH2D * m_notNNHighMidMuonHisto;
-	TH2D * m_notNNHighMidElectronHisto;
-	
-	TH2D * m_NNSuperResolvedMuonHisto;
-	TH2D * m_NNSuperResolvedElectronHisto;
-	TH2D * m_notNNSuperResolvedMuonHisto;
-	TH2D * m_notNNSuperResolvedElectronHisto;
+	double quark1Eta;
+	double quark1Phi;
+	double quark1Mass;
+	double quark1Pt;
+
+	double quark2Eta;
+	double quark2Phi;
+	double quark2Mass;
+	double quark2Pt;
+
+	double lepton1Eta;
+	double lepton1Phi;
+	double lepton1Mass;
+	double lepton1Pt;
+	int lepton1Id;
+
+	double lepton2Eta;
+	double lepton2Phi;
+	double lepton2Mass;
+	double lepton2Pt;
+	int lepton2Id;
+
+	double leadJetRecoEta;
+	double leaJetRecoPhi;
+	double leadJetRecoMass;
+	double leadJetRecoPt;
+
+	double subJetRecoEta;
+	double subJetRecoPhi;
+	double subJetRecoMass;
+	double subJetRecoPt;
+
+	double subRecoElectronEta;
+	double subRecoElectronPhi;
+	double subRecoElectronMass;
+	double subRecoElectronPt;
+
+	double leadRecoElectronEta;
+	double leadRecoElectronPhi;
+	double leadRecoElectronMass;
+	double leadRecoElectronPt;
+
+	double subElectronleadElectronRecodr2;
+	double subElectronleadJRecodr2;
+	double subElectronsubJRecodr2;
+	double leadElectronleadJRecodr2;
+	double leadElectronsubJRecodr2;
+	double leadJsubJdr2;
+
+	double leadElectronsubElectronRecoMass;
+	double subElectronleadJsubJRecoMass;
+	double leadElectronleadJsubJRecoMass;
+	double matchedElectronleadJsubJRecoMass;
+
+	double leadJsubJRecoMass;
+	double electron1RecoMass;
+	double electron2RecoMass;
+	double leadJsubJRecoMassError;
+	double electron1RecoMassError;
+	double electron2RecoMassError;
+
+	double fullRecoMassElectron;
+
+	double subRecoMuonEta;
+	double subRecoMuonPhi;
+	double subRecoMuonMass;
+	double subRecoMuonPt;
+
+	double leadRecoMuonEta;
+	double leadRecoMuonPhi;
+	double leadRecoMuonMass;
+	double leadRecoMuonPt;
+
+	double subMuonleadMuonRecodr2;
+	double subMuonleadJRecodr2;
+	double subMuonsubJRecodr2;
+	double leadMuonleadJRecodr2;
+	double leadMuonsubJRecodr2;
+
+	double leadMuonsubMuonRecoMass;
+	double subMuonleadJsubJRecoMass;
+	double leadMuonleadJsubJRecoMass;
+	double matchedMuonleadJsubJRecoMass;
+
+	double muon1RecoMass;
+	double muon2RecoMass;
+
+	double fullRecoMassMuon;
+
+	double match1ElectronEta;
+	double match1ElectronPhi;
+	double match1ElectronDPhi;
+	double match1ElectronDR;
+	double match1ElectronPt;
+
+	double match2ElectronEta;
+	double match2ElectronPhi;
+	double match2ElectronDPhi;
+	double match2ElectronDR;
+	double match2ElectronPt;
+
+	double match1MuonEta;
+	double match1MuonPhi;
+	double match1MuonDPhi;
+	double match1MuonDR;
+	double match1MuonPt;
+
+	double match2MuonEta;
+	double match2MuonPhi;
+	double match2MuonDPhi;
+	double match2MuonDR;
+	double match2MuonPt;
+
+	double match1ElectronEtaWR;
+	double match1ElectronPhiWR;
+	double match1ElectronDPhiWR;
+	double match1ElectronDRWR;
+	double match1ElectronPtWR;
+
+	double match2ElectronEtaWR;
+	double match2ElectronPhiWR;
+	double match2ElectronDPhiWR;
+	double match2ElectronDRWR;
+	double match2ElectronPtWR;
+
+	double match1MuonEtaWR;
+	double match1MuonPhiWR;
+	double match1MuonDPhiWR;
+	double match1MuonDRWR;
+	double match1MuonPtWR;
+
+	double match2MuonEtaWR;
+	double match2MuonPhiWR;
+	double match2MuonDPhiWR;
+	double match2MuonDRWR;
+	double match2MuonPtWR;
+
+	double match1ElectronEtaJJL1;
+	double match1ElectronPhiJJL1;
+	double match1ElectronDPhiJJL1;
+	double match1ElectronDRJJL1;
+	double match1ElectronPtJJL1;
+
+	double match2ElectronEtaJJL2;
+	double match2ElectronPhiJJL2;
+	double match2ElectronDPhiJJL2;
+	double match2ElectronDRJJL2;
+	double match2ElectronPtJJL2;
+
+	double match1MuonEtaJJL1;
+	double match1MuonPhiJJL1;
+	double match1MuonDPhiJJL1;
+	double match1MuonDRJJL1;
+	double match1MuonPtJJL1;
+
+	double match2MuonEtaJJL2;
+	double match2MuonPhiJJL2;
+	double match2MuonDPhiJJL2;
+	double match2MuonDRJJL2;
+	double match2MuonPtJJL2;
+
+	double match1ElectronEtaL1;
+	double match1ElectronPhiL1;
+	double match1ElectronDPhiL1;
+	double match1ElectronDRL1;
+	double match1ElectronPtL1;
+
+	double match2ElectronEtaL2;
+	double match2ElectronPhiL2;
+	double match2ElectronDPhiL2;
+	double match2ElectronDRL2;
+	double match2ElectronPtL2;
+
+	double match1MuonEtaL1;
+	double match1MuonPhiL1;
+	double match1MuonDPhiL1;
+	double match1MuonDRL1;
+	double match1MuonPtL1;
+
+	double match2MuonEtaL2;
+	double match2MuonPhiL2;
+	double match2MuonDPhiL2;
+	double match2MuonDRL2;
+	double match2MuonPtL2;
+
+	double sphericityElectron1;
+	double sphericityMuon1;
+	double sphericityElectron2;
+	double sphericityMuon2;
+
+	double sphericitySubElectron;
+	double sphericityLeadElectron;
+	double sphericitySubMuon;
+	double sphericityLeadMuon;
 
 
-	TH1D * m_muonEtaHisto1;
-	TH1D * m_muonPhiHisto1;
-	TH1D * m_muonDPhiHisto1;
-	TH1D * m_muonDRHisto1;
-	TH1D * m_muonPtHisto1;
-	TH1D * m_muonPtHisto1Scaled;
-	TH1D * m_muonNMassHisto1;
-	TH1D * m_muon1SphericityHisto; 
+	double subRecoElectronDPhi;
+	double subRecoElectronDR;
+	double leadRecoElectronDPhi;
+	double leadRecoElectronDR;
 
-	TH1D * m_muonEtaHisto2;
-	TH1D * m_muonPhiHisto2;
-	TH1D * m_muonDPhiHisto2;
-	TH1D * m_muonDRHisto2;
-	TH1D * m_muonPtHisto2;
-	TH1D * m_muonPtHisto2Scaled;
-	TH1D * m_muonNMassHisto2;
-	TH1D * m_muon2SphericityHisto; 
-	
-	TH1D * m_electronEtaHisto1;
-	TH1D * m_electronPhiHisto1;
-	TH1D * m_electronDPhiHisto1;
-	TH1D * m_electronDRHisto1;
-	TH1D * m_electronPtHisto1;
-	TH1D * m_electronPtHisto1Scaled;
-	TH1D * m_electronNMassHisto1;
-	TH1D * m_electron1SphericityHisto;
+	double subRecoMuonDPhi;
+	double subRecoMuonDR;
+	double leadRecoMuonDPhi;
+	double leadRecoMuonDR;
 
-	TH1D * m_electronEtaHisto2;
-	TH1D * m_electronPhiHisto2;
-	TH1D * m_electronDPhiHisto2;
-	TH1D * m_electronDRHisto2;
-	TH1D * m_electronPtHisto2;
-	TH1D * m_electronPtHisto2Scaled;
-	TH1D * m_electronNMassHisto2;
-	TH1D * m_electron2SphericityHisto;
-	
-	TH1D * m_muonEtaHisto1WR;
-	TH1D * m_muonPhiHisto1WR;
-	TH1D * m_muonDPhiHisto1WR;
-	TH1D * m_muonDRHisto1WR;
-	TH1D * m_muonPtHisto1WR;
+	double WRMass;
+	double NMass;
 
-	TH1D * m_muonEtaHisto2WR;
-	TH1D * m_muonPhiHisto2WR;
-	TH1D * m_muonDPhiHisto2WR;
-	TH1D * m_muonDRHisto2WR;
-	TH1D * m_muonPtHisto2WR;
-	
-	TH1D * m_electronEtaHisto1WR;
-	TH1D * m_electronPhiHisto1WR;
-	TH1D * m_electronDPhiHisto1WR;
-	TH1D * m_electronDRHisto1WR;
-	TH1D * m_electronPtHisto1WR;
+	double leadRecoElectronEtaWR;
+	double subRecoElectronEtaWR;
+	double leadRecoMuonEtaWR;
+	double subRecoMuonEtaWR;
 
-	TH1D * m_electronEtaHisto2WR;
-	TH1D * m_electronPhiHisto2WR;
-	TH1D * m_electronDPhiHisto2WR;
-	TH1D * m_electronDRHisto2WR;
-	TH1D * m_electronPtHisto2WR;
-	
-	TH1D * m_muonEtaHisto1N;
-	TH1D * m_muonPhiHisto1N;
-	TH1D * m_muonDPhiHisto1N;
-	TH1D * m_muonDRHisto1N;
-	TH1D * m_muonPtHisto1N;
-
-	TH1D * m_muonEtaHisto2N;
-	TH1D * m_muonPhiHisto2N;
-	TH1D * m_muonDPhiHisto2N;
-	TH1D * m_muonDRHisto2N;
-	TH1D * m_muonPtHisto2N;
-	
-	TH1D * m_electronEtaHisto1N;
-	TH1D * m_electronPhiHisto1N;
-	TH1D * m_electronDPhiHisto1N;
-	TH1D * m_electronDRHisto1N;
-	TH1D * m_electronPtHisto1N;
-
-	TH1D * m_electronEtaHisto2N;
-	TH1D * m_electronPhiHisto2N;
-	TH1D * m_electronDPhiHisto2N;
-	TH1D * m_electronDRHisto2N;
-	TH1D * m_electronPtHisto2N;
-	
-	TH1D * m_muonEtaHisto1L;
-	TH1D * m_muonPhiHisto1L;
-	TH1D * m_muonDPhiHisto1L;
-	TH1D * m_muonDRHisto1L;
-	TH1D * m_muonPtHisto1L;
-
-	TH1D * m_muonEtaHisto2L;
-	TH1D * m_muonPhiHisto2L;
-	TH1D * m_muonDPhiHisto2L;
-	TH1D * m_muonDRHisto2L;
-	TH1D * m_muonPtHisto2L;
-	
-	TH1D * m_muonEtaHistoNN;
-	TH1D * m_muonPhiHistoNN;
-	TH1D * m_muonDPhiHistoNN;
-	TH1D * m_muonDRHistoNN;
-	TH1D * m_muonPtHistoNN;
-	TH1D * m_muonSphericityHistoNN;
-	TH1D * m_muonEtaHistoWRNN;
-	TH1D * m_muonNMassHistoNN;
-	
-	TH1D * m_electronEtaHisto1L;
-	TH1D * m_electronPhiHisto1L;
-	TH1D * m_electronDPhiHisto1L;
-	TH1D * m_electronDRHisto1L;
-	TH1D * m_electronPtHisto1L;
-
-	TH1D * m_electronEtaHisto2L;
-	TH1D * m_electronPhiHisto2L;
-	TH1D * m_electronDPhiHisto2L;
-	TH1D * m_electronDRHisto2L;
-	TH1D * m_electronPtHisto2L;
-	
-	TH1D * m_electronEtaHistoNN;
-	TH1D * m_electronPhiHistoNN;
-	TH1D * m_electronDPhiHistoNN;
-	TH1D * m_electronDRHistoNN;
-	TH1D * m_electronPtHistoNN;
-	TH1D * m_electronSphericityHistoNN;
-	TH1D * m_electronEtaHistoWRNN;
-	TH1D * m_electronNMassHistoNN;
+private:
 
 
-   
+
 };
-
 #endif
