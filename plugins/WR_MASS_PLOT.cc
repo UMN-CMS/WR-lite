@@ -147,7 +147,7 @@ WR_MASS_PLOT::~WR_MASS_PLOT()
 void
 WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-	bool background = true;
+	bool background = false;
 	
 	eventBits myRECOevent;
 	
@@ -368,6 +368,9 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 					}
 					if (elCount == 1) {
 						subleadElectron = &(*(iElectron));
+					}
+					if (elCount == 2){
+						myRECOevent.extraLeptons = true;
 					}
 					// If not background, do gen matching
 					if(!background){ 
@@ -710,6 +713,9 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 					if (muCount == 1) {
 						subleadMuon = &(*(iMuon));
 					}
+					if (muCount == 2){
+						myRECOevent.extraLeptons = true;
+					}
 					double match1DR = sqrt(dR2(iMuon->eta(), myRECOevent.lepton1Eta, iMuon->phi(), myRECOevent.lepton1Phi));
 					double match2DR = sqrt(dR2(iMuon->eta(), myRECOevent.lepton2Eta, iMuon->phi(), myRECOevent.lepton2Phi));
 					
@@ -819,15 +825,25 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 				myRECOevent.fullRecoMassMuon}}; //good
 				double predictOut[1][1] = {{0.0}};
 				
+				std::cout << "resolvedInput" << std::endl;
+				std::cout << predictIn[0][0] << "" << predictIn[0][1] << "" << predictIn[0][2] << "" << predictIn[0][3] << "" << predictIn[0][4]  << std::endl;
 				networkResolved.predict(&predictIn[0][0], &predictOut[0][0], 1);
 				
+				std::cout << "resolvedOutput" << std::endl;
+				std::cout << predictOut[0][0]  << std::endl;
 				if(predictOut[0][0]==1.0){
 					myRECOevent.nnResolvedPickedLeadMuon = true;
 				} else {
 					myRECOevent.nnResolvedPickedSubLeadMuon = true;
 				}
+				//predictOut[0][0] = 0.0;
 				
+				std::cout << "lowMidInput" << std::endl;
+				std::cout << predictIn[0][0] << "" << predictIn[0][1] << "" << predictIn[0][2] << "" << predictIn[0][3] << "" << predictIn[0][4] << "" << std::endl;
 				networkLowMid.predict(&predictIn[0][0], &predictOut[0][0], 1);	
+				
+				std::cout << "lowMidOutput" << std::endl;
+				std::cout << predictOut[0][0]  << std::endl;
 				
 				if(predictOut[0][0]==1.0){
 					myRECOevent.nnLowMidPickedLeadMuon = true;
@@ -1031,9 +1047,14 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 			}		
 		}
-		if((background && leadJet != 0 && subleadJet != 0 && leadMuon != 0 && leadElectron != 0 && subleadElectron == 0 && subleadMuon == 0)){
+		if((leadJet != 0 && subleadJet != 0 && leadMuon != 0 && leadElectron != 0 && subleadElectron == 0 && subleadMuon == 0)){
 			myRECOevent.mixedLeptons = true;
+		} else if(leadJet != 0 && subleadJet != 0 && leadMuon != 0 && leadElectron != 0 && subleadElectron != 0 && subleadMuon == 0){
+			myRECOevent.extraLeptons = true;
+		} else if(leadJet != 0 && subleadJet != 0 && leadMuon != 0 && leadElectron != 0 && subleadElectron == 0 && subleadMuon != 0){
+			myRECOevent.extraLeptons = true;
 		}
+		
 
 
 		
