@@ -5,7 +5,7 @@ options = VarParsing ('analysis')
 options.parseArguments()
 
 
-process = cms.Process("Demo")
+process = cms.Process("DemoTwo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 
@@ -23,6 +23,8 @@ process.demo = cms.EDAnalyzer('WR_MASS_PLOT',
   genParticles = cms.InputTag("prunedGenParticles"),
   AK4recoCHSJets = cms.InputTag("slimmedJets"),
   regMuons = cms.InputTag("slimmedMuons"),
+  regElectrons = cms.InputTag("slimmedElectrons"),
+  genInfo = cms.InputTag("generator"),
 )
 
 process.TFileService = cms.Service("TFileService",
