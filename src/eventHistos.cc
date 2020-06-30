@@ -624,6 +624,8 @@ void eventHistos::fill(eventBits& event) {
 	
 	if(event.mixedLeptons){ // mixed leptons
 		m_leptonHisto->Fill("one Electron, one Muon", event.eventWeight);  
+	} else if(event.extraLeptons){
+		m_leptonHisto->Fill("Nothing", event.eventWeight);
 	} else { // two electrons or two muons
 		if(event.passedElectronReco){ // pass Reco
 			m_leptonHisto->Fill("two Electrons", event.eventWeight);
@@ -661,9 +663,10 @@ void eventHistos::fill(eventBits& event) {
 			}
 			
 			
-		} else if(event.twoElectrons) {// fail Reco
-			m_leptonHisto->Fill("failed Electron Reco", event.eventWeight);
-		}
+		} 
+		//else if(event.twoElectrons) {// fail Reco
+		//	m_leptonHisto->Fill("failed Electron Reco", event.eventWeight);
+		//}
 		if(event.passedMuonReco) {
 			m_leptonHisto->Fill("two Muons", event.eventWeight);
 	
@@ -700,9 +703,9 @@ void eventHistos::fill(eventBits& event) {
 				m_correctNNHisto->Fill("counted out cuts", event.eventWeight);
 			}
 
-		} else if(event.twoMuons){
-			m_leptonHisto->Fill("failed Muon Reco", event.eventWeight);
-		}
+		}// else if(event.twoMuons){
+		//	m_leptonHisto->Fill("failed Muon Reco", event.eventWeight);
+		//}
 
 		if(event.passedElectronReco && event.passedMuonReco){
 			m_leptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
