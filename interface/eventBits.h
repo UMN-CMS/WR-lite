@@ -26,6 +26,7 @@ public:
 	bool passedElectronReco;
 	bool passedMuonReco;
 	bool correctNN;
+	bool extraLeptons;
 
 	bool nnResolvedPickedLeadElectron;
 	bool nnResolvedPickedLeadMuon;
