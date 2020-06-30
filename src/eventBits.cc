@@ -16,6 +16,7 @@ eventBits::eventBits() {
 	passedElectronReco = false;
 	passedMuonReco = false;
 	correctNN = false;
+	extraLeptons = false;
 	
 	nnResolvedPickedLeadElectron = false;
 	nnResolvedPickedLeadMuon = false;
@@ -271,6 +272,7 @@ void eventBits::clear() {
 	passedElectronReco = false;
 	passedMuonReco = false;
 	correctNN = false;
+	extraLeptons = false;
 	
 	nnResolvedPickedLeadElectron = false;
 	nnResolvedPickedLeadMuon = false;
