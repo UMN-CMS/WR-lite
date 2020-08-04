@@ -11,7 +11,7 @@
 <use name="DataFormats/PatCandidates"/>
 <use name="DataFormats/Math"/>
 <use name="SimDataFormats/GeneratorProducts"/>
-<use name="ExoAnalysis/WR-lite"/>
+<use name="ExoAnalysis/WR_lite"/>
 <use name="DataFormats/CLHEP"/>
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>

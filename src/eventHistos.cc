@@ -3,9 +3,9 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "CommonTools/Utils/interface/TFileDirectory.h"
-////LOCAL CLASSES
-#include "ExoAnalysis/WR-lite/interface/eventBits.h"
-#include "ExoAnalysis/WR-lite/interface/eventHistos.h"
+//LOCAL CLASSES
+#include "ExoAnalysis/WR_lite/interface/eventBits.h"
+#include "ExoAnalysis/WR_lite/interface/eventHistos.h"
 
 #include "TH1D.h"
 
@@ -17,17 +17,22 @@ void eventHistos::book(TFileDirectory histoFolder) {
 
 	m_histoFolder = histoFolder;
 
+	//TTree for further data analysis
+	m_massData = m_histoFolder.make<TTree>("massData","massData");
+	m_massData->Branch("WRMass",&WRMass,"WRMass/D");
+	m_massData->Branch("resolvedNNMass",&resolvedNNMass,"resolvedNNMass/D");
+	m_massData->Branch("superResolvedNNMass",&superResolvedNNMass,"superResolvedNNMass/D");
+	m_massData->Branch("correctNMass",&correctNMass,"correctNMass/D");
+	m_massData->Branch("incorrectNMass",&incorrectNMass,"incorrectNMass/D");
+	m_massData->Branch("leadNMass",&leadNMass,"leadNMass/D");
+	m_massData->Branch("subNMass",&subNMass,"subNMass/D");
+	m_massData->Branch("weight",&treeWeight,"weight/D");
 
-	m_subMuJJhisto = m_histoFolder.make<TH1D>("subMuJJhisto" , "Sublead Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
-	m_l2MuJJhisto = m_histoFolder.make<TH1D>("l2MuJJhisto" , "Matched Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
-	
-	m_jetjetMassHisto = m_histoFolder.make<TH1D>("jetjetMassHisto" , "Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
-	m_matchedL1MassHisto = m_histoFolder.make<TH1D>("matchedL1MassHisto" , "Matched L1 lepton Mass" , 50 , 0 , 4000 );
-	m_matchedL2MassHisto = m_histoFolder.make<TH1D>("matchedL2MassHisto" , "Matched L2 lepton Mass" , 50 , 0 , 4000 );
-	
-	m_subElectronJJhisto = m_histoFolder.make<TH1D>("subElectronJJhisto" , "Sublead Electron + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
-	m_l2ElectronJJhisto = m_histoFolder.make<TH1D>("l2ElectronJJhisto" , "Matched Electron + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
 
+	//General stats histos
+	
+	//1D
+	
 	m_nMinusOneHisto = m_histoFolder.make<TH1D>("nMinusOneHisto", "n-1 Plot", 6, 1, 6);
 
 	m_nMinusOneHisto->GetXaxis()->SetBinLabel(1,"jet pt > 40 GeV");
@@ -55,192 +60,203 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_nMinusOneMuonHisto->GetXaxis()->SetBinLabel(5,"leading l pt > 60 GeV");
 	m_nMinusOneMuonHisto->GetXaxis()->SetBinLabel(6,"subleading l pt > 53 GeV");
 	
-	m_leptonHisto = m_histoFolder.make<TH1D>("leptonHisto", "lepton Distribution" , 10, 1, 10);
+	m_leptonHisto = m_histoFolder.make<TH1D>("leptonHisto", "lepton Distribution" , 13, 1, 13);
 	
 	m_leptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
 	m_leptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
 	m_leptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
 	m_leptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
-	m_leptonHisto->GetXaxis()->SetBinLabel(5,"Nothing");
-	m_leptonHisto->GetXaxis()->SetBinLabel(6,"failed Cuts, Electron");
-	m_leptonHisto->GetXaxis()->SetBinLabel(7,"failed Cuts, Muon");
-	m_leptonHisto->GetXaxis()->SetBinLabel(8,"passed Cuts, Electron");
-	m_leptonHisto->GetXaxis()->SetBinLabel(9,"passed Cuts, Muon");
-	m_leptonHisto->GetXaxis()->SetBinLabel(10,"passed Cuts, Both");
+	m_leptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_leptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_leptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_leptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_leptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_leptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_leptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_leptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_leptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
+	
+	
+	m_failGenleptonHisto = m_histoFolder.make<TH1D>("leptonHistoFail", "lepton Distribution, failed Gen" , 13, 1, 13);
+	
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_failGenleptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
+	
+	
+	m_mixGenleptonHisto = m_histoFolder.make<TH1D>("leptonHistoMix", "lepton Distribution, mixed Gen" , 13, 1, 13);
+	
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_mixGenleptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
+	
+	m_muonGenleptonHisto = m_histoFolder.make<TH1D>("leptonHistoMuon", "lepton Distribution, muon Gen" , 13, 1, 13);
+	
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_muonGenleptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
+	
+	m_electronGenleptonHisto = m_histoFolder.make<TH1D>("leptonHistoElectron", "lepton Distribution, electron Gen" , 13, 1, 13);
+	
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_electronGenleptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
+	
+	m_tauGenleptonHisto = m_histoFolder.make<TH1D>("leptonHistoTau", "lepton Distribution, tau Gen" , 13, 1, 13);
+	
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(1,"two Electrons");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(2,"two Muons");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(3,"one Electron, one Muon");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(4,"two Electrons and two Muons");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(5,"Nothing, failed Recos one lepton");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(6,"Nothing, failed Recos bad jets");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(7,"Nothing, failed Recos other");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(8,"Nothing, extra leptons");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(9,"failed Cuts, Electron");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(10,"failed Cuts, Muon");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(11,"passed Cuts, Electron");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(12,"passed Cuts, Muon");
+	m_tauGenleptonHisto->GetXaxis()->SetBinLabel(13,"passed Cuts, Both");
 	
 	m_countHisto = m_histoFolder.make<TH1D>("countHisto", "counts" , 1, 1, 1);
 	m_countHisto->GetXaxis()->SetBinLabel(1,"count");
+
 	
 	
-	m_correctNNHisto = m_histoFolder.make<TH1D>("correctNNHisto", "Fraction Correct NN" , 6, 1, 6);
-	m_correctNNHisto->GetXaxis()->SetBinLabel(1,"correct");
-	m_correctNNHisto->GetXaxis()->SetBinLabel(2,"incorrect");
-	m_correctNNHisto->GetXaxis()->SetBinLabel(3,"counted out cuts");
-	m_correctNNHisto->GetXaxis()->SetBinLabel(4,"correct and passed cuts");
-	m_correctNNHisto->GetXaxis()->SetBinLabel(5,"incorrect and passed cuts");
-	m_correctNNHisto->GetXaxis()->SetBinLabel(6,"counted in cuts");
+	//2D
 	
+	//Gen Histos
 	
-	m_lepton2Histo = m_histoFolder.make<TH2D>("lepton2Histo" , "Lepton 2" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_lepton2Histo->GetXaxis()-> SetTitle("lepton + quark + quark");
-	m_lepton2Histo->GetYaxis()-> SetTitle("lepton + lepton + quark + quark");
+	//1D
 	
-	m_matchedMuonHisto = m_histoFolder.make<TH2D>("matchedMuonHisto" , "Matched Muon" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_leadEPtHisto = m_histoFolder.make<TH1D>("leadEPtHisto" , "Lead Electron pt" , 100 , 0 , 2000 );
+	m_leadEPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_matchedElectronHisto = m_histoFolder.make<TH2D>("matchedElectronHisto" , "Matched Electron" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_leadMPtHisto = m_histoFolder.make<TH1D>("leadMPtHisto" , "Lead Muon pt" , 100 , 0 , 2000 );
+	m_leadMPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_matchedMuon1MassHisto = m_histoFolder.make<TH2D>("matchedMuon1MassHisto" , "Matched Muon 1 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedMuon1MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedMuon1MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_leadTPtHisto = m_histoFolder.make<TH1D>("leadTPtHisto" , "Lead Tau pt" , 100 , 0 , 2000 );
+	m_leadTPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_matchedElectron1MassHisto = m_histoFolder.make<TH2D>("matchedElectron1MassHisto" , "Matched Electron 1 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedElectron1MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedElectron1MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_subleadEPtHisto = m_histoFolder.make<TH1D>("subleadEPtHisto" , "Sublead Electron pt" , 100 , 0 , 2000 );
+	m_subleadEPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_matchedMuon2MassHisto = m_histoFolder.make<TH2D>("matchedMuon2MassHisto" , "Matched Muon 2 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedMuon2MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedMuon2MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_subleadMPtHisto = m_histoFolder.make<TH1D>("subleadMPtHisto" , "Sublead Muon pt" , 100 , 0 , 2000 );
+	m_subleadMPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_matchedElectron2MassHisto = m_histoFolder.make<TH2D>("matchedElectron2MassHisto" , "Matched Electron 2 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_matchedElectron2MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_matchedElectron2MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_subleadTPtHisto = m_histoFolder.make<TH1D>("subleadTPtHisto" , "Sublead Tau pt" , 100 , 0 , 2000 );
+	m_subleadTPtHisto->GetXaxis()-> SetTitle("Pt (GeV)");
+	
+	//Reco Histos
+	
+	//1D
+	
+	m_subMuJJhisto = m_histoFolder.make<TH1D>("subMuJJhisto" , "Sublead Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
+	m_subMuJJhisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	
+	m_subElectronJJhisto = m_histoFolder.make<TH1D>("subElectronJJhisto" , "Sublead Muon + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
+	m_subElectronJJhisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	
+	m_jetjetMassHisto = m_histoFolder.make<TH1D>("jetjetMassHisto" , "Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
+	m_jetjetMassHisto->GetXaxis()-> SetTitle("jet + jet (GeV)");
+	
+	//2D
 	
 	m_subLeadMuonHisto = m_histoFolder.make<TH2D>("subLeadMuonHisto" , "Sublead Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_subLeadMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_subLeadMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_subLeadMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_subLeadMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
 	m_subLeadElectronHisto = m_histoFolder.make<TH2D>("subLeadElectronHisto" , "Sublead Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_subLeadElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_subLeadElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_subLeadElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_subLeadElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
 	m_leadMuonHisto = m_histoFolder.make<TH2D>("leadMuonHisto" , "Lead Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_leadMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_leadMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_leadMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_leadMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
 	m_leadElectronHisto = m_histoFolder.make<TH2D>("leadElectronHisto" , "Lead Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_leadElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_leadElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_leadElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_leadElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_lowEtaElectronHisto = m_histoFolder.make<TH2D>("lowEtaElectronHisto" , "Low eta Electron" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_lowEtaElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_lowEtaElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_lowEtaElectronHisto = m_histoFolder.make<TH2D>("lowEtaElectronHisto" , "Low eta Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_lowEtaElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_lowEtaElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_lowEtaMuonHisto = m_histoFolder.make<TH2D>("lowEtaMuonHisto" , "Low eta Muon" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_lowEtaMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_lowEtaMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_lowEtaMuonHisto = m_histoFolder.make<TH2D>("lowEtaMuonHisto" , "Low eta Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_lowEtaMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_lowEtaMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_highEtaElectronHisto = m_histoFolder.make<TH2D>("highEtaElectronHisto" , "High eta Electron" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_highEtaElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_highEtaElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_highEtaElectronHisto = m_histoFolder.make<TH2D>("highEtaElectronHisto" , "High eta Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_highEtaElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_highEtaElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_highEtaMuonHisto = m_histoFolder.make<TH2D>("highEtaMuonHisto" , "High eta Muon" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_highEtaMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_highEtaMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_highEtaMuonHisto = m_histoFolder.make<TH2D>("highEtaMuonHisto" , "High eta Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_highEtaMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_highEtaMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_lowR2MuonHisto = m_histoFolder.make<TH2D>("lowR2MuonHisto" , "Low R^2 Muon" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_lowR2MuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_lowR2MuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_lowR2MuonHisto = m_histoFolder.make<TH2D>("lowR2MuonHisto" , "Low R^2 Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_lowR2MuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_lowR2MuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_lowR2ElectronHisto = m_histoFolder.make<TH2D>("lowR2ElectronHisto" , "Low R^2 Electron" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_lowR2ElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_lowR2ElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_lowR2ElectronHisto = m_histoFolder.make<TH2D>("lowR2ElectronHisto" , "Low R^2 Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_lowR2ElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_lowR2ElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_highR2MuonHisto = m_histoFolder.make<TH2D>("highR2MuonHisto" , "High R^2 Muon" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_highR2MuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_highR2MuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_highR2MuonHisto = m_histoFolder.make<TH2D>("highR2MuonHisto" , "High R^2 Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_highR2MuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_highR2MuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_highR2ElectronHisto = m_histoFolder.make<TH2D>("highR2ElectronHisto" , "High R^2 Electron" , 100, 0, 6000, 100 , 0 , 6000 );
-	m_highR2ElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_highR2ElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_highR2ElectronHisto = m_histoFolder.make<TH2D>("highR2ElectronHisto" , "High R^2 Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_highR2ElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_highR2ElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
+	//Matched Reco Histos
 	
+	//1D
 	
-	m_NNResolvedMuonHisto = m_histoFolder.make<TH2D>("NNResolvedMuonHisto" , "Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
+	m_l2MuJJhisto = m_histoFolder.make<TH1D>("l2MuJJhisto" , "Matched Lepton + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
 	
-	m_NNResolvedElectronHisto = m_histoFolder.make<TH2D>("NNResolvedElectronHisto" , "Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNResolvedMuonHisto = m_histoFolder.make<TH2D>("notNNResolvedMuonHisto" , "Not Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNResolvedElectronHisto = m_histoFolder.make<TH2D>("notNNResolvedElectronHisto" , "Not Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	
-	m_NNLowMidMuonHisto = m_histoFolder.make<TH2D>("NNLowMidMuonHisto" , "Low Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNLowMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNLowMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNLowMidElectronHisto = m_histoFolder.make<TH2D>("NNLowMidElectronHisto" , "Low Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNLowMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNLowMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNLowMidMuonHisto = m_histoFolder.make<TH2D>("notNNLowMidMuonHisto" , "Not Low Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNLowMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNLowMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNLowMidElectronHisto = m_histoFolder.make<TH2D>("notNNLowMidElectronHisto" , "Not Low Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNLowMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNLowMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNMidMuonHisto = m_histoFolder.make<TH2D>("NNMidMuonHisto" , "Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNMidElectronHisto = m_histoFolder.make<TH2D>("NNMidElectronHisto" , "Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNMidMuonHisto = m_histoFolder.make<TH2D>("notNNMidMuonHisto" , "Not Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNMidElectronHisto = m_histoFolder.make<TH2D>("notNNMidElectronHisto" , "Not Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	
-	m_NNHighMidMuonHisto = m_histoFolder.make<TH2D>("NNHighMidMuonHisto" , "High Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNHighMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNHighMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNHighMidElectronHisto = m_histoFolder.make<TH2D>("NNHighMidElectronHisto" , "High Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNHighMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNHighMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNHighMidMuonHisto = m_histoFolder.make<TH2D>("notNNHighMidMuonHisto" , "Not High Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNHighMidMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNHighMidMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNHighMidElectronHisto = m_histoFolder.make<TH2D>("notNNHighMidElectronHisto" , "Not High Mid NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNHighMidElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNHighMidElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNSuperResolvedMuonHisto = m_histoFolder.make<TH2D>("NNSuperResolvedMuonHisto" , "Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNSuperResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNSuperResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_NNSuperResolvedElectronHisto = m_histoFolder.make<TH2D>("NNSuperResolvedElectronHisto" , "Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_NNSuperResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_NNSuperResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNSuperResolvedMuonHisto = m_histoFolder.make<TH2D>("notNNSuperResolvedMuonHisto" , "Not Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNSuperResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNSuperResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
-	m_notNNSuperResolvedElectronHisto = m_histoFolder.make<TH2D>("notNNSuperResolvedElectronHisto" , "Not Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
-	m_notNNSuperResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet");
-	m_notNNSuperResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet");
-	
+	m_l2ElectronJJhisto = m_histoFolder.make<TH1D>("l2ElectronJJhisto" , "Matched Lepton + Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
 	
 	m_electronEtaHisto1 = m_histoFolder.make<TH1D>("electronEtaHisto1" , "lepton Eta Histo" , 100, -3, 3);
 	m_electronEtaHisto1->GetXaxis()-> SetTitle("eta");
@@ -255,7 +271,7 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_electronDRHisto1->GetXaxis()-> SetTitle("dR");
 	
 	m_electronPtHisto1 = m_histoFolder.make<TH1D>("electronPtHisto1" , "lepton Pt Histo" , 100, 0, 2000);
-	m_electronPtHisto1->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto1->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	m_electronPtHisto1Scaled = m_histoFolder.make<TH1D>("electronPtHisto1Scaled" , "lepton Pt Scaled Histo" , 100, 0, 0.7);
 	m_electronPtHisto1Scaled->GetXaxis()-> SetTitle("Pt Scaled");
@@ -267,7 +283,7 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_electronEtaHisto1WR->GetXaxis()-> SetTitle("eta");
 	
 	m_electronNMassHisto1 = m_histoFolder.make<TH1D>("electronNMassHisto1" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_electronNMassHisto1->GetXaxis()-> SetTitle("N mass");
+	m_electronNMassHisto1->GetXaxis()-> SetTitle("N mass (GeV)");
 	
 	
 	
@@ -286,7 +302,7 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_muonDRHisto1->GetXaxis()-> SetTitle("dR");
 	
 	m_muonPtHisto1 = m_histoFolder.make<TH1D>("muonPtHisto1" , "lepton Pt Histo" , 100, 0, 2000);
-	m_muonPtHisto1->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto1->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	m_muonPtHisto1Scaled = m_histoFolder.make<TH1D>("muonPtHisto1Scaled" , "lepton Pt Scaled Histo" , 100, 0, 0.7);
 	m_muonPtHisto1Scaled->GetXaxis()-> SetTitle("Pt Scaled");
@@ -298,7 +314,7 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_muonEtaHisto1WR->GetXaxis()-> SetTitle("eta");
 	
 	m_muonNMassHisto1 = m_histoFolder.make<TH1D>("muonNMassHisto1" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_muonNMassHisto1->GetXaxis()-> SetTitle("N mass");
+	m_muonNMassHisto1->GetXaxis()-> SetTitle("N mass (GeV)");
 	
 	
 	m_electronEtaHisto2 = m_histoFolder.make<TH1D>("electronEtaHisto2" , "lepton Eta Histo" , 100, -3, 3);
@@ -314,7 +330,7 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_electronDRHisto2->GetXaxis()-> SetTitle("dR");
 	
 	m_electronPtHisto2 = m_histoFolder.make<TH1D>("electronPtHisto2" , "lepton Pt Histo" , 100, 0, 2000);
-	m_electronPtHisto2->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto2->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	m_electronPtHisto2Scaled = m_histoFolder.make<TH1D>("electronPtHisto2Scaled" , "lepton Pt Scaled Histo" , 100, 0, 0.7);
 	m_electronPtHisto2Scaled->GetXaxis()-> SetTitle("Pt Scaled");
@@ -326,405 +342,477 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_electronEtaHisto2WR->GetXaxis()-> SetTitle("eta");
 	
 	m_electronNMassHisto2 = m_histoFolder.make<TH1D>("electronNMassHisto2" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_electronNMassHisto2->GetXaxis()-> SetTitle("N mass");
+	m_electronNMassHisto2->GetXaxis()-> SetTitle("N mass (GeV)");
 	
 	
 	m_muonEtaHisto2 = m_histoFolder.make<TH1D>("muonEtaHisto2" , "lepton Eta Histo" , 100, -3, 3);
-	m_muonEtaHisto2->GetXaxis()-> SetTitle("eta"); //
+	m_muonEtaHisto2->GetXaxis()-> SetTitle("eta");
 	
 	m_muonPhiHisto2 = m_histoFolder.make<TH1D>("muonPhiHisto2" , "lepton Phi Histo", 100, -3.5, 3.5);
 	m_muonPhiHisto2->GetXaxis()-> SetTitle("phi");
 	
 	m_muonDPhiHisto2 = m_histoFolder.make<TH1D>("muonDPhiHisto2" , "lepton dPhi Histo" , 100, -6.5, 6.5);
-	m_muonDPhiHisto2->GetXaxis()-> SetTitle("dPhi"); //
+	m_muonDPhiHisto2->GetXaxis()-> SetTitle("dPhi");
 	
 	m_muonDRHisto2 = m_histoFolder.make<TH1D>("muonDRHisto2" , "lepton dR Histo" , 100, 0, 10);
-	m_muonDRHisto2->GetXaxis()-> SetTitle("dR"); //
+	m_muonDRHisto2->GetXaxis()-> SetTitle("dR");
 	
 	m_muonPtHisto2 = m_histoFolder.make<TH1D>("muonPtHisto2" , "lepton Pt Histo" , 100, 0, 2000);
-	m_muonPtHisto2->GetXaxis()-> SetTitle("Pt"); //
+	m_muonPtHisto2->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	m_muonPtHisto2Scaled = m_histoFolder.make<TH1D>("muonPtHisto2Scaled" , "lepton Pt Scaled Histo" , 100, 0, 0.7);
 	m_muonPtHisto2Scaled->GetXaxis()-> SetTitle("Pt Scaled");
 	
 	m_muon2SphericityHisto = m_histoFolder.make<TH1D>("muon2SphericityHisto" , "lepton sphericity Histo" , 100, 0, 1);
-	m_muon2SphericityHisto->GetXaxis()-> SetTitle("transverse sphericity"); //
+	m_muon2SphericityHisto->GetXaxis()-> SetTitle("transverse sphericity");
 	
 	m_muonEtaHisto2WR = m_histoFolder.make<TH1D>("muonEtaHisto2WR" , "lepton Eta Histo WR" , 100, -3, 3);
-	m_muonEtaHisto2WR->GetXaxis()-> SetTitle("eta"); //
+	m_muonEtaHisto2WR->GetXaxis()-> SetTitle("eta");
 	
 	m_muonNMassHisto2 = m_histoFolder.make<TH1D>("muonNMassHisto2" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_muonNMassHisto2->GetXaxis()-> SetTitle("N mass");
+	m_muonNMassHisto2->GetXaxis()-> SetTitle("N mass (GeV)");
 	
-	
-	m_electronEtaHistoNN = m_histoFolder.make<TH1D>("electronEtaHistoNN" , "lepton Eta Histo" , 100, -3, 3);
-	m_electronEtaHistoNN->GetXaxis()-> SetTitle("eta");
-	
-	m_electronPhiHistoNN = m_histoFolder.make<TH1D>("electronPhiHistoNN" , "lepton Phi Histo" , 100, -3.5, 3.5);
-	m_electronPhiHistoNN->GetXaxis()-> SetTitle("phi");
-	
-	m_electronDPhiHistoNN = m_histoFolder.make<TH1D>("electronDPhiHistoNN" , "lepton dPhi Histo" , 100, -6.5, 6.5);
-	m_electronDPhiHistoNN->GetXaxis()-> SetTitle("dPhi");
-	
-	m_electronDRHistoNN = m_histoFolder.make<TH1D>("electronDRHistoNN" , "lepton dR Histo" , 100, 0, 10);
-	m_electronDRHistoNN->GetXaxis()-> SetTitle("dR");
-	
-	m_electronPtHistoNN = m_histoFolder.make<TH1D>("electronPtHistoNN" , "lepton Pt Histo" , 100, 0, 2000);
-	m_electronPtHistoNN->GetXaxis()-> SetTitle("Pt");
-	
-	m_electronSphericityHistoNN = m_histoFolder.make<TH1D>("electronSphericityHistoNN" , "lepton sphericity Histo" , 100, 0, 1);
-	m_electronSphericityHistoNN->GetXaxis()-> SetTitle("transverse sphericity"); //
-	
-	m_electronEtaHistoWRNN = m_histoFolder.make<TH1D>("electronEtaHistoWRNN" , "lepton Eta Histo WR" , 100, -3, 3);
-	m_electronEtaHistoWRNN->GetXaxis()-> SetTitle("eta"); //
-	
-	m_electronNMassHistoNN = m_histoFolder.make<TH1D>("electronNMassHistoNN" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_electronNMassHistoNN->GetXaxis()-> SetTitle("N mass");
-	
-	
-	m_muonEtaHistoNN = m_histoFolder.make<TH1D>("muonEtaHistoNN" , "lepton Eta Histo" , 100, -3, 3);
-	m_muonEtaHistoNN->GetXaxis()-> SetTitle("eta");
-	
-	m_muonPhiHistoNN = m_histoFolder.make<TH1D>("muonPhiHistoNN" , "lepton Phi Histo" , 100, -3.5, 3.5);
-	m_muonPhiHistoNN->GetXaxis()-> SetTitle("phi");
-	
-	m_muonDPhiHistoNN = m_histoFolder.make<TH1D>("muonDPhiHistoNN" , "lepton dPhi Histo" , 100, -6.5, 6.5);
-	m_muonDPhiHistoNN->GetXaxis()-> SetTitle("dPhi");
-	
-	m_muonDRHistoNN = m_histoFolder.make<TH1D>("muonDRHistoNN" , "lepton dR Histo" , 100, 0, 10);
-	m_muonDRHistoNN->GetXaxis()-> SetTitle("dR");
-	
-	m_muonPtHistoNN = m_histoFolder.make<TH1D>("muonPtHistoNN" , "lepton Pt Histo" , 100, 0, 2000);
-	m_muonPtHistoNN->GetXaxis()-> SetTitle("Pt");
-	
-	m_muonSphericityHistoNN = m_histoFolder.make<TH1D>("muonSphericityHistoNN" , "lepton sphericity Histo" , 100, 0, 1);
-	m_muonSphericityHistoNN->GetXaxis()-> SetTitle("transverse sphericity"); //
-	
-	m_muonEtaHistoWRNN = m_histoFolder.make<TH1D>("muonEtaHistoWRNN" , "lepton Eta Histo WR" , 100, -3, 3);
-	m_muonEtaHistoWRNN->GetXaxis()-> SetTitle("eta"); //
-	
-	m_muonNMassHistoNN = m_histoFolder.make<TH1D>("muonNMassHistoNN" , "lepton N Mass Histo" , 100, 0, 2000);
-	m_muonNMassHistoNN->GetXaxis()-> SetTitle("N mass");
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	m_electronPhiHisto1WR = m_histoFolder.make<TH1D>("electronPhiHisto1WR" , "electron Phi Histo WR" , 100, -3.5, 3.5);
+	m_electronPhiHisto1WR = m_histoFolder.make<TH1D>("electronPhiHisto1WR" , "lepton Phi Histo WR" , 100, -3.5, 3.5);
 	m_electronPhiHisto1WR->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto1WR = m_histoFolder.make<TH1D>("electronDPhiHisto1WR" , "electron dPhi Histo WR" , 100, -6.5, 6.5);
+	m_electronDPhiHisto1WR = m_histoFolder.make<TH1D>("electronDPhiHisto1WR" , "lepton dPhi Histo WR" , 100, -6.5, 6.5);
 	m_electronDPhiHisto1WR->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto1WR = m_histoFolder.make<TH1D>("electronDRHisto1WR" , "electron dR Histo WR" , 100, 0, 10);
+	m_electronDRHisto1WR = m_histoFolder.make<TH1D>("electronDRHisto1WR" , "lepton dR Histo WR" , 100, 0, 10);
 	m_electronDRHisto1WR->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto1WR = m_histoFolder.make<TH1D>("electronPtHisto1WR" , "electron Pt Histo WR" , 100, 0, 2000);
-	m_electronPtHisto1WR->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto1WR = m_histoFolder.make<TH1D>("electronPtHisto1WR" , "lepton Pt Histo WR" , 100, 0, 2000);
+	m_electronPtHisto1WR->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	
 	
-	m_muonPhiHisto1WR = m_histoFolder.make<TH1D>("muonPhiHisto1WR" , "muon Phi Histo WR" , 100, -3.5, 3.5);
+	m_muonPhiHisto1WR = m_histoFolder.make<TH1D>("muonPhiHisto1WR" , "lepton Phi Histo WR" , 100, -3.5, 3.5);
 	m_muonPhiHisto1WR->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto1WR = m_histoFolder.make<TH1D>("muonDPhiHisto1WR" , "muon dPhi Histo WR" , 100, -6.5, 6.5);
+	m_muonDPhiHisto1WR = m_histoFolder.make<TH1D>("muonDPhiHisto1WR" , "lepton dPhi Histo WR" , 100, -6.5, 6.5);
 	m_muonDPhiHisto1WR->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto1WR = m_histoFolder.make<TH1D>("muonDRHisto1WR" , "muon dR Histo WR" , 100, 0, 10);
+	m_muonDRHisto1WR = m_histoFolder.make<TH1D>("muonDRHisto1WR" , "lepton dR Histo WR" , 100, 0, 10);
 	m_muonDRHisto1WR->GetXaxis()-> SetTitle("dR");
 	
-	m_muonPtHisto1WR = m_histoFolder.make<TH1D>("muonPtHisto1WR" , "muon Pt Histo WR" , 100, 0, 2000);
-	m_muonPtHisto1WR->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto1WR = m_histoFolder.make<TH1D>("muonPtHisto1WR" , "lepton Pt Histo WR" , 100, 0, 2000);
+	m_muonPtHisto1WR->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	
 	
-	m_electronPhiHisto2WR = m_histoFolder.make<TH1D>("electronPhiHisto2WR" , "electron Phi Histo WR" , 100, -3.5, 3.5);
+	m_electronPhiHisto2WR = m_histoFolder.make<TH1D>("electronPhiHisto2WR" , "lepton Phi Histo WR" , 100, -3.5, 3.5);
 	m_electronPhiHisto2WR->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto2WR = m_histoFolder.make<TH1D>("electronDPhiHisto2WR" , "electron dPhi Histo WR" , 100, -6.5, 6.5);
+	m_electronDPhiHisto2WR = m_histoFolder.make<TH1D>("electronDPhiHisto2WR" , "lepton dPhi Histo WR" , 100, -6.5, 6.5);
 	m_electronDPhiHisto2WR->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto2WR = m_histoFolder.make<TH1D>("electronDRHisto2WR" , "electron dR Histo WR" , 100, 0, 10);
+	m_electronDRHisto2WR = m_histoFolder.make<TH1D>("electronDRHisto2WR" , "lepton dR Histo WR" , 100, 0, 10);
 	m_electronDRHisto2WR->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto2WR = m_histoFolder.make<TH1D>("electronPtHisto2WR" , "electron Pt Histo WR" , 100, 0, 2000);
-	m_electronPtHisto2WR->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto2WR = m_histoFolder.make<TH1D>("electronPtHisto2WR" , "lepton Pt Histo WR" , 100, 0, 2000);
+	m_electronPtHisto2WR->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	
-	
-	m_muonPhiHisto2WR = m_histoFolder.make<TH1D>("muonPhiHisto2WR" , "muon Phi Histo WR", 100, -3.5, 3.5);
+	m_muonPhiHisto2WR = m_histoFolder.make<TH1D>("muonPhiHisto2WR" , "lepton Phi Histo WR", 100, -3.5, 3.5);
 	m_muonPhiHisto2WR->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto2WR = m_histoFolder.make<TH1D>("muonDPhiHisto2WR" , "muon dPhi Histo WR" , 100, -6.5, 6.5);
+	m_muonDPhiHisto2WR = m_histoFolder.make<TH1D>("muonDPhiHisto2WR" , "lepton dPhi Histo WR" , 100, -6.5, 6.5);
 	m_muonDPhiHisto2WR->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto2WR = m_histoFolder.make<TH1D>("muonDRHisto2WR" , "muon dR Histo WR" , 100, 0, 10);
+	m_muonDRHisto2WR = m_histoFolder.make<TH1D>("muonDRHisto2WR" , "lepton dR Histo WR" , 100, 0, 10);
 	m_muonDRHisto2WR->GetXaxis()-> SetTitle("dR");
 	
 	m_muonPtHisto2WR = m_histoFolder.make<TH1D>("muonPtHisto2WR" , "muon Pt Histo WR" , 100, 0, 2000);
-	m_muonPtHisto2WR->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto2WR->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	
-	
-	
-	
-	
-	m_electronEtaHisto1N = m_histoFolder.make<TH1D>("electronEtaHisto1N" , "electron Eta Histo N" , 100, -3, 3);
+	m_electronEtaHisto1N = m_histoFolder.make<TH1D>("electronEtaHisto1N" , "lepton Eta Histo N" , 100, -3, 3);
 	m_electronEtaHisto1N->GetXaxis()-> SetTitle("eta");
 	
-	m_electronPhiHisto1N = m_histoFolder.make<TH1D>("electronPhiHisto1N" , "electron Phi Histo N" , 100, -3.5, 3.5);
+	m_electronPhiHisto1N = m_histoFolder.make<TH1D>("electronPhiHisto1N" , "lepton Phi Histo N" , 100, -3.5, 3.5);
 	m_electronPhiHisto1N->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto1N = m_histoFolder.make<TH1D>("electronDPhiHisto1N" , "electron dPhi Histo N" , 100, -6.5, 6.5);
+	m_electronDPhiHisto1N = m_histoFolder.make<TH1D>("electronDPhiHisto1N" , "lepton dPhi Histo N" , 100, -6.5, 6.5);
 	m_electronDPhiHisto1N->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto1N = m_histoFolder.make<TH1D>("electronDRHisto1N" , "electron dR Histo N" , 100, 0, 10);
+	m_electronDRHisto1N = m_histoFolder.make<TH1D>("electronDRHisto1N" , "lepton dR Histo N" , 100, 0, 10);
 	m_electronDRHisto1N->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto1N = m_histoFolder.make<TH1D>("electronPtHisto1N" , "electron Pt Histo N" , 100, 0, 2000);
-	m_electronPtHisto1N->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto1N = m_histoFolder.make<TH1D>("electronPtHisto1N" , "lepton Pt Histo N" , 100, 0, 2000);
+	m_electronPtHisto1N->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_muonEtaHisto1N = m_histoFolder.make<TH1D>("muonEtaHisto1N" , "muon Eta Histo N" , 100, -3, 3);
+	m_muonEtaHisto1N = m_histoFolder.make<TH1D>("muonEtaHisto1N" , "lepton Eta Histo N" , 100, -3, 3);
 	m_muonEtaHisto1N->GetXaxis()-> SetTitle("eta");
 	
-	m_muonPhiHisto1N = m_histoFolder.make<TH1D>("muonPhiHisto1N" , "muon Phi Histo N" , 100, -3.5, 3.5);
+	m_muonPhiHisto1N = m_histoFolder.make<TH1D>("muonPhiHisto1N" , "lepton Phi Histo N" , 100, -3.5, 3.5);
 	m_muonPhiHisto1N->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto1N = m_histoFolder.make<TH1D>("muonDPhiHisto1N" , "muon dPhi Histo N" , 100, -6.5, 6.5);
+	m_muonDPhiHisto1N = m_histoFolder.make<TH1D>("muonDPhiHisto1N" , "lepton dPhi Histo N" , 100, -6.5, 6.5);
 	m_muonDPhiHisto1N->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto1N = m_histoFolder.make<TH1D>("muonDRHisto1N" , "muon dR Histo N" , 100, 0, 10);
+	m_muonDRHisto1N = m_histoFolder.make<TH1D>("muonDRHisto1N" , "lepton dR Histo N" , 100, 0, 10);
 	m_muonDRHisto1N->GetXaxis()-> SetTitle("dR");
 	
-	m_muonPtHisto1N = m_histoFolder.make<TH1D>("muonPtHisto1N" , "muon Pt Histo N" , 100, 0, 2000);
-	m_muonPtHisto1N->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto1N = m_histoFolder.make<TH1D>("muonPtHisto1N" , "lepton Pt Histo N" , 100, 0, 2000);
+	m_muonPtHisto1N->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_electronEtaHisto2N = m_histoFolder.make<TH1D>("electronEtaHisto2N" , "electron Eta Histo N" , 100, -3, 3);
+	m_electronEtaHisto2N = m_histoFolder.make<TH1D>("electronEtaHisto2N" , "lepton Eta Histo N" , 100, -3, 3);
 	m_electronEtaHisto2N->GetXaxis()-> SetTitle("eta");
 	
-	m_electronPhiHisto2N = m_histoFolder.make<TH1D>("electronPhiHisto2N" , "electron Phi Histo N" , 100, -3.5, 3.5);
+	m_electronPhiHisto2N = m_histoFolder.make<TH1D>("electronPhiHisto2N" , "lepton Phi Histo N" , 100, -3.5, 3.5);
 	m_electronPhiHisto2N->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto2N = m_histoFolder.make<TH1D>("electronDPhiHisto2N" , "electron dPhi Histo N" , 100, -6.5, 6.5);
+	m_electronDPhiHisto2N = m_histoFolder.make<TH1D>("electronDPhiHisto2N" , "lepton dPhi Histo N" , 100, -6.5, 6.5);
 	m_electronDPhiHisto2N->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto2N = m_histoFolder.make<TH1D>("electronDRHisto2N" , "electron dR Histo N" , 100, 0, 10);
+	m_electronDRHisto2N = m_histoFolder.make<TH1D>("electronDRHisto2N" , "lepton dR Histo N" , 100, 0, 10);
 	m_electronDRHisto2N->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto2N = m_histoFolder.make<TH1D>("electronPtHisto2N" , "electron Pt Histo N" , 100, 0, 2000);
-	m_electronPtHisto2N->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto2N = m_histoFolder.make<TH1D>("electronPtHisto2N" , "lepton Pt Histo N" , 100, 0, 2000);
+	m_electronPtHisto2N->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_muonEtaHisto2N = m_histoFolder.make<TH1D>("muonEtaHisto2N" , "muon Eta Histo N" , 100, -3, 3);
+	m_muonEtaHisto2N = m_histoFolder.make<TH1D>("muonEtaHisto2N" , "lepton Eta Histo N" , 100, -3, 3);
 	m_muonEtaHisto2N->GetXaxis()-> SetTitle("eta");
 	
-	m_muonPhiHisto2N = m_histoFolder.make<TH1D>("muonPhiHisto2N" , "muon Phi Histo N", 100, -3.5, 3.5);
+	m_muonPhiHisto2N = m_histoFolder.make<TH1D>("muonPhiHisto2N" , "lepton Phi Histo N", 100, -3.5, 3.5);
 	m_muonPhiHisto2N->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto2N = m_histoFolder.make<TH1D>("muonDPhiHisto2N" , "muon dPhi Histo N" , 100, -6.5, 6.5);
+	m_muonDPhiHisto2N = m_histoFolder.make<TH1D>("muonDPhiHisto2N" , "lepton dPhi Histo N" , 100, -6.5, 6.5);
 	m_muonDPhiHisto2N->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto2N = m_histoFolder.make<TH1D>("muonDRHisto2N" , "muon dR Histo N" , 100, 0, 10);
+	m_muonDRHisto2N = m_histoFolder.make<TH1D>("muonDRHisto2N" , "lepton dR Histo N" , 100, 0, 10);
 	m_muonDRHisto2N->GetXaxis()-> SetTitle("dR");
 	
-	m_muonPtHisto2N = m_histoFolder.make<TH1D>("muonPtHisto2N" , "muon Pt Histo N" , 100, 0, 2000);
-	m_muonPtHisto2N->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto2N = m_histoFolder.make<TH1D>("muonPtHisto2N" , "lepton Pt Histo N" , 100, 0, 2000);
+	m_muonPtHisto2N->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 
 
-	m_electronEtaHisto1L = m_histoFolder.make<TH1D>("electronEtaHisto1L" , "electron Eta Histo L" , 100, -3, 3);
+	m_electronEtaHisto1L = m_histoFolder.make<TH1D>("electronEtaHisto1L" , "lepton Eta Histo L" , 100, -3, 3);
 	m_electronEtaHisto1L->GetXaxis()-> SetTitle("eta");
 	
-	m_electronPhiHisto1L = m_histoFolder.make<TH1D>("electronPhiHisto1L" , "electron Phi Histo L" , 100, -3.5, 3.5);
+	m_electronPhiHisto1L = m_histoFolder.make<TH1D>("electronPhiHisto1L" , "lepton Phi Histo L" , 100, -3.5, 3.5);
 	m_electronPhiHisto1L->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto1L = m_histoFolder.make<TH1D>("electronDPhiHisto1L" , "electron dPhi Histo L" , 100, -6.5, 6.5);
+	m_electronDPhiHisto1L = m_histoFolder.make<TH1D>("electronDPhiHisto1L" , "lepton dPhi Histo L" , 100, -6.5, 6.5);
 	m_electronDPhiHisto1L->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto1L = m_histoFolder.make<TH1D>("electronDRHisto1L" , "electron dR Histo L" , 100, 0, 10);
+	m_electronDRHisto1L = m_histoFolder.make<TH1D>("electronDRHisto1L" , "lepton dR Histo L" , 100, 0, 10);
 	m_electronDRHisto1L->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto1L = m_histoFolder.make<TH1D>("electronPtHisto1L" , "electron Pt Histo L" , 100, 0, 2000);
-	m_electronPtHisto1L->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto1L = m_histoFolder.make<TH1D>("electronPtHisto1L" , "lepton Pt Histo L" , 100, 0, 2000);
+	m_electronPtHisto1L->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_muonEtaHisto1L = m_histoFolder.make<TH1D>("muonEtaHisto1L" , "muon Eta Histo L" , 100, -3, 3);
+	m_muonEtaHisto1L = m_histoFolder.make<TH1D>("muonEtaHisto1L" , "lepton Eta Histo L" , 100, -3, 3);
 	m_muonEtaHisto1L->GetXaxis()-> SetTitle("eta");
 	
-	m_muonPhiHisto1L = m_histoFolder.make<TH1D>("muonPhiHisto1L" , "muon Phi Histo L" , 100, -3.5, 3.5);
+	m_muonPhiHisto1L = m_histoFolder.make<TH1D>("muonPhiHisto1L" , "lepton Phi Histo L" , 100, -3.5, 3.5);
 	m_muonPhiHisto1L->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto1L = m_histoFolder.make<TH1D>("muonDPhiHisto1L" , "muon dPhi Histo L" , 100, -6.5, 6.5);
+	m_muonDPhiHisto1L = m_histoFolder.make<TH1D>("muonDPhiHisto1L" , "lepton dPhi Histo L" , 100, -6.5, 6.5);
 	m_muonDPhiHisto1L->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto1L = m_histoFolder.make<TH1D>("muonDRHisto1L" , "muon dR Histo L" , 100, 0, 10);
+	m_muonDRHisto1L = m_histoFolder.make<TH1D>("muonDRHisto1L" , "lepton dR Histo L" , 100, 0, 10);
 	m_muonDRHisto1L->GetXaxis()-> SetTitle("dR");
 	
-	m_muonPtHisto1L = m_histoFolder.make<TH1D>("muonPtHisto1L" , "muon Pt Histo L" , 100, 0, 2000);
-	m_muonPtHisto1L->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto1L = m_histoFolder.make<TH1D>("muonPtHisto1L" , "lepton Pt Histo L" , 100, 0, 2000);
+	m_muonPtHisto1L->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_electronEtaHisto2L = m_histoFolder.make<TH1D>("electronEtaHisto2L" , "electron Eta Histo L" , 100, -3, 3);
+	m_electronEtaHisto2L = m_histoFolder.make<TH1D>("electronEtaHisto2L" , "lepton Eta Histo L" , 100, -3, 3);
 	m_electronEtaHisto2L->GetXaxis()-> SetTitle("eta");
 	
-	m_electronPhiHisto2L = m_histoFolder.make<TH1D>("electronPhiHisto2L" , "electron Phi Histo L" , 100, -3.5, 3.5);
+	m_electronPhiHisto2L = m_histoFolder.make<TH1D>("electronPhiHisto2L" , "lepton Phi Histo L" , 100, -3.5, 3.5);
 	m_electronPhiHisto2L->GetXaxis()-> SetTitle("phi");
 	
-	m_electronDPhiHisto2L = m_histoFolder.make<TH1D>("electronDPhiHisto2L" , "electron dPhi Histo L" , 100, -6.5, 6.5);
+	m_electronDPhiHisto2L = m_histoFolder.make<TH1D>("electronDPhiHisto2L" , "lepton dPhi Histo L" , 100, -6.5, 6.5);
 	m_electronDPhiHisto2L->GetXaxis()-> SetTitle("dPhi");
 	
-	m_electronDRHisto2L = m_histoFolder.make<TH1D>("electronDRHisto2L" , "electron dR Histo L" , 100, 0, 10);
+	m_electronDRHisto2L = m_histoFolder.make<TH1D>("electronDRHisto2L" , "lepton dR Histo L" , 100, 0, 10);
 	m_electronDRHisto2L->GetXaxis()-> SetTitle("dR");
 	
-	m_electronPtHisto2L = m_histoFolder.make<TH1D>("electronPtHisto2L" , "electron Pt Histo L" , 100, 0, 2000);
-	m_electronPtHisto2L->GetXaxis()-> SetTitle("Pt");
+	m_electronPtHisto2L = m_histoFolder.make<TH1D>("electronPtHisto2L" , "lepton Pt Histo L" , 100, 0, 2000);
+	m_electronPtHisto2L->GetXaxis()-> SetTitle("Pt (GeV)");
 	
-	m_muonEtaHisto2L = m_histoFolder.make<TH1D>("muonEtaHisto2L" , "muon Eta Histo L" , 100, -3, 3);
+	m_muonEtaHisto2L = m_histoFolder.make<TH1D>("muonEtaHisto2L" , "lepton Eta Histo L" , 100, -3, 3);
 	m_muonEtaHisto2L->GetXaxis()-> SetTitle("eta");
 	
-	m_muonPhiHisto2L = m_histoFolder.make<TH1D>("muonPhiHisto2L" , "muon Phi Histo L", 100, -3.5, 3.5);
+	m_muonPhiHisto2L = m_histoFolder.make<TH1D>("muonPhiHisto2L" , "lepton Phi Histo L", 100, -3.5, 3.5);
 	m_muonPhiHisto2L->GetXaxis()-> SetTitle("phi");
 	
-	m_muonDPhiHisto2L = m_histoFolder.make<TH1D>("muonDPhiHisto2L" , "muon dPhi Histo L" , 100, -6.5, 6.5);
+	m_muonDPhiHisto2L = m_histoFolder.make<TH1D>("muonDPhiHisto2L" , "lepton dPhi Histo L" , 100, -6.5, 6.5);
 	m_muonDPhiHisto2L->GetXaxis()-> SetTitle("dPhi");
 	
-	m_muonDRHisto2L = m_histoFolder.make<TH1D>("muonDRHisto2L" , "muon dR Histo L" , 100, 0, 10);
+	m_muonDRHisto2L = m_histoFolder.make<TH1D>("muonDRHisto2L" , "lepton dR Histo L" , 100, 0, 10);
 	m_muonDRHisto2L->GetXaxis()-> SetTitle("dR");
 	
-	m_muonPtHisto2L = m_histoFolder.make<TH1D>("muonPtHisto2L" , "muon Pt Histo L" , 100, 0, 2000);
-	m_muonPtHisto2L->GetXaxis()-> SetTitle("Pt");
+	m_muonPtHisto2L = m_histoFolder.make<TH1D>("muonPtHisto2L" , "lepton Pt Histo L" , 100, 0, 2000);
+	m_muonPtHisto2L->GetXaxis()-> SetTitle("Pt (GeV)");
 	
 	
+	//2D
+	
+	m_matchedMuonHisto = m_histoFolder.make<TH2D>("matchedMuonHisto" , "Matched Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_matchedElectronHisto = m_histoFolder.make<TH2D>("matchedElectronHisto" , "Matched Lepton" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_matchedMuon1MassHisto = m_histoFolder.make<TH2D>("matchedMuon1MassHisto" , "Matched Lepton 1 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedMuon1MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedMuon1MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_matchedElectron1MassHisto = m_histoFolder.make<TH2D>("matchedElectron1MassHisto" , "Matched Lepton 1 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedElectron1MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedElectron1MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_matchedMuon2MassHisto = m_histoFolder.make<TH2D>("matchedMuon2MassHisto" , "Matched Lepton 2 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedMuon2MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedMuon2MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_matchedElectron2MassHisto = m_histoFolder.make<TH2D>("matchedElectron2MassHisto" , "Matched Lepton 2 Mass" , 100, 0, 6000, 100 , 0 , 6000 );
+	m_matchedElectron2MassHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_matchedElectron2MassHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
 	
+	//NN Histos
+	
+	//1D
 	
 	
-	/*
-	m_electron1SphericityHisto = m_histoFolder.make<TH1D>("electron1SphericityHisto" , "electron sphericity Histo" , 100, 0, 1);
-	m_electron1SphericityHisto->GetXaxis()-> SetTitle("sphericity");
+	//2D
 	
-	m_electron2SphericityHisto = m_histoFolder.make<TH1D>("electron2SphericityHisto" , "electron sphericity Histo" , 100, 0, 1);
-	m_electron2SphericityHisto->GetXaxis()-> SetTitle("sphericity");
+	m_NNResolvedMuonHisto = m_histoFolder.make<TH2D>("NNResolvedMuonHisto" , "Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_NNResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_NNResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_muon1SphericityHisto = m_histoFolder.make<TH1D>("muon1SphericityHisto" , "muon sphericity Histo" , 100, 0, 1);
-	m_muon1SphericityHisto->GetXaxis()-> SetTitle("sphericity");
+	m_NNResolvedElectronHisto = m_histoFolder.make<TH2D>("NNResolvedElectronHisto" , "Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_NNResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_NNResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 	
-	m_muon2SphericityHisto = m_histoFolder.make<TH1D>("muon2SphericityHisto" , "muon sphericity Histo" , 100, 0, 1);
-	m_muon2SphericityHisto->GetXaxis()-> SetTitle("sphericity");
-	*/
+	m_notNNResolvedMuonHisto = m_histoFolder.make<TH2D>("notNNResolvedMuonHisto" , "Not Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_notNNResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_notNNResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_notNNResolvedElectronHisto = m_histoFolder.make<TH2D>("notNNResolvedElectronHisto" , "Not Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_notNNResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_notNNResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+
+	m_NNSuperResolvedMuonHisto = m_histoFolder.make<TH2D>("NNSuperResolvedMuonHisto" , "Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_NNSuperResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_NNSuperResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_NNSuperResolvedElectronHisto = m_histoFolder.make<TH2D>("NNSuperResolvedElectronHisto" , "Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_NNSuperResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_NNSuperResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_notNNSuperResolvedMuonHisto = m_histoFolder.make<TH2D>("notNNSuperResolvedMuonHisto" , "Not Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_notNNSuperResolvedMuonHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_notNNSuperResolvedMuonHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
+	
+	m_notNNSuperResolvedElectronHisto = m_histoFolder.make<TH2D>("notNNSuperResolvedElectronHisto" , "Not Super Resolved NN Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
+	m_notNNSuperResolvedElectronHisto->GetXaxis()-> SetTitle("lepton + jet + jet (GeV)");
+	m_notNNSuperResolvedElectronHisto->GetYaxis()-> SetTitle("lepton + lepton + jet + jet (GeV)");
 
 }
 
+//General histogram filling
 void eventHistos::fill(eventBits& event) {
+
 	m_countHisto->Fill("count", event.count);
-	//std::cout << "count2 " << event.count << std::endl;
-	
+	if(event.leadLeptonType==11){
+		m_leadEPtHisto->Fill(event.leadLeptonPt, event.eventWeight);
+	} else if(event.leadLeptonType==13){
+		m_leadMPtHisto->Fill(event.leadLeptonPt, event.eventWeight);
+	} else if(event.leadLeptonType==15){
+		m_leadTPtHisto->Fill(event.leadLeptonPt, event.eventWeight);
+	}
+	if(event.subleadLeptonType==11){
+		m_subleadEPtHisto->Fill(event.subleadLeptonPt, event.eventWeight);
+	} else if(event.subleadLeptonType==13){
+		m_subleadMPtHisto->Fill(event.subleadLeptonPt, event.eventWeight);
+	} else if(event.subleadLeptonType==15){
+		m_subleadTPtHisto->Fill(event.subleadLeptonPt, event.eventWeight);
+	}
 	if(event.mixedLeptons){ // mixed leptons
-		m_leptonHisto->Fill("one Electron, one Muon", event.eventWeight);  
+		m_leptonHisto->Fill("one Electron, one Muon", event.eventWeight);
+		if(event.failedGenPtEta){
+			m_failGenleptonHisto->Fill("one Electron, one Muon", event.eventWeight);
+		} else if(event.mixedGen){
+			m_mixGenleptonHisto->Fill("one Electron, one Muon", event.eventWeight);
+		} else if(event.electronGen) {
+			m_electronGenleptonHisto->Fill("one Electron, one Muon", event.eventWeight);
+		} else if(event.muonGen) {
+			m_muonGenleptonHisto->Fill("one Electron, one Muon", event.eventWeight);	
+		} else if(event.tauGen) {
+			m_tauGenleptonHisto->Fill("one Electron, one Muon", event.eventWeight);
+		}
 	} else if(event.extraLeptons){
-		m_leptonHisto->Fill("Nothing", event.eventWeight);
+		m_leptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		if(event.failedGenPtEta){
+			m_failGenleptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		} else if(event.mixedGen){
+			m_mixGenleptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		} else if(event.electronGen) {
+			m_electronGenleptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		} else if(event.muonGen) {
+			m_muonGenleptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		} else if(event.tauGen) {
+			m_tauGenleptonHisto->Fill("Nothing, extra leptons", event.eventWeight);
+		}
 	} else { // two electrons or two muons
 		if(event.passedElectronReco){ // pass Reco
 			m_leptonHisto->Fill("two Electrons", event.eventWeight);
-
-			////std::cout << "passed Electron Reco" << std::endl;
+			if(event.failedGenPtEta){
+				m_failGenleptonHisto->Fill("two Electrons", event.eventWeight);
+			} else if(event.mixedGen){
+				m_mixGenleptonHisto->Fill("two Electrons", event.eventWeight);
+			} else if(event.electronGen) {
+				m_electronGenleptonHisto->Fill("two Electrons", event.eventWeight);
+			} else if(event.muonGen) {
+				m_muonGenleptonHisto->Fill("two Electrons", event.eventWeight);
+			} else if(event.tauGen) {
+				m_tauGenleptonHisto->Fill("two Electrons", event.eventWeight);
+			}
 			if(event.nMinusOneFailElectron.size()==0){ // pass Cuts
-				////std::cout << "passed Electron Cuts" << std::endl;
 				fillElectron(event);
 				fillNMinusOnePassElectron(event);
-				
-				if(event.correctNN){
-					m_correctNNHisto->Fill("correct and passed cuts", event.eventWeight);
-					m_correctNNHisto->Fill("counted in cuts", event.eventWeight);
-				} else {
-					m_correctNNHisto->Fill("incorrect and passed cuts", event.eventWeight);
-					m_correctNNHisto->Fill("counted in cuts", event.eventWeight);
-				}
-				
-				
 			} else { // fail cuts
-			    ////std::cout << "failed Electron Cuts" << std::endl;
 				m_leptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
-				
+				if(event.failedGenPtEta){
+					m_failGenleptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
+				} else if(event.mixedGen){
+					m_mixGenleptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
+				} else if(event.electronGen) {
+					m_electronGenleptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
+				} else if(event.muonGen) {
+					m_muonGenleptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
+				} else if(event.tauGen) {
+					m_tauGenleptonHisto->Fill("failed Cuts, Electron", event.eventWeight);
+				}
 				if(event.nMinusOneFailElectron.size()==1){ // fail one cut
-					////std::cout << "However, only 1 cut" << std::endl;
 					fillNMinusOneFailElectron(event);
 				}
 			}
-			if(event.correctNN){
-				m_correctNNHisto->Fill("correct", event.eventWeight);
-				m_correctNNHisto->Fill("counted out cuts", event.eventWeight);
-			} else {
-				m_correctNNHisto->Fill("incorrect", event.eventWeight);
-				m_correctNNHisto->Fill("counted out cuts", event.eventWeight);
-			}
-			
-			
 		} 
-		//else if(event.twoElectrons) {// fail Reco
-		//	m_leptonHisto->Fill("failed Electron Reco", event.eventWeight);
-		//}
 		if(event.passedMuonReco) {
 			m_leptonHisto->Fill("two Muons", event.eventWeight);
-	
-
-			////std::cout << "passed Muon Reco" << std::endl;
+			if(event.failedGenPtEta){
+				m_failGenleptonHisto->Fill("two Muons", event.eventWeight);
+			} else if(event.mixedGen){
+				m_mixGenleptonHisto->Fill("two Muons", event.eventWeight);
+			} else if(event.electronGen) {
+				m_electronGenleptonHisto->Fill("two Muons", event.eventWeight);
+			} else if(event.muonGen) {
+				m_muonGenleptonHisto->Fill("two Muons", event.eventWeight);
+			} else if(event.tauGen) {
+				m_tauGenleptonHisto->Fill("two Muons", event.eventWeight);
+			}
 			if(event.nMinusOneFailMuon.size()==0){ // pass Cuts
-			    //std::cout << "passed Muon Cuts" << std::endl;
 				fillMuon(event);
 				fillNMinusOnePassMuon(event);
-				
-				if(event.correctNN){
-					m_correctNNHisto->Fill("correct and passed cuts", event.eventWeight);
-					m_correctNNHisto->Fill("counted in cuts", event.eventWeight);
-				} else {
-					m_correctNNHisto->Fill("incorrect and passed cuts", event.eventWeight);
-					m_correctNNHisto->Fill("counted in cuts", event.eventWeight);
-				}
-				
 			} else { // fail cuts
-			    ////std::cout << "failed Muon Cuts" << std::endl;
 				m_leptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
-				
+				if(event.failedGenPtEta){
+					m_failGenleptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
+				} else if(event.mixedGen){
+					m_mixGenleptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
+				} else if(event.electronGen) {
+					m_electronGenleptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
+				} else if(event.muonGen) {
+					m_muonGenleptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
+				} else if(event.tauGen) {
+					m_tauGenleptonHisto->Fill("failed Cuts, Muon", event.eventWeight);
+				}
 				if(event.nMinusOneFailMuon.size()==1){ // fail one cut
-					////std::cout << "However, only 1 cut" << std::endl;
 					fillNMinusOneFailMuon(event);
 				}
 			}
-			
-			if(event.correctNN){
-				m_correctNNHisto->Fill("correct", event.eventWeight);
-				m_correctNNHisto->Fill("counted out cuts", event.eventWeight);
-			} else {
-				m_correctNNHisto->Fill("incorrect", event.eventWeight);
-				m_correctNNHisto->Fill("counted out cuts", event.eventWeight);
-			}
-
-		}// else if(event.twoMuons){
-		//	m_leptonHisto->Fill("failed Muon Reco", event.eventWeight);
-		//}
-
+		}
 		if(event.passedElectronReco && event.passedMuonReco){
 			m_leptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
-	
+			if(event.failedGenPtEta){
+				m_failGenleptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
+			} else if(event.mixedGen){
+				m_mixGenleptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
+			} else if(event.electronGen) {
+				m_electronGenleptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
+			} else if(event.muonGen) {
+				m_muonGenleptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
+			} else if(event.tauGen) {
+				m_tauGenleptonHisto->Fill("two Electrons and two Muons", event.eventWeight);
+			}
 		} else if(!event.passedElectronReco && !event.passedMuonReco){
-			m_leptonHisto->Fill("Nothing", event.eventWeight);
+			if(event.badJets){
+				m_leptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				if(event.failedGenPtEta){
+					m_failGenleptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				} else if(event.mixedGen){
+					m_mixGenleptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				} else if(event.electronGen) {
+					m_electronGenleptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				} else if(event.muonGen) {
+					m_muonGenleptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				} else if(event.tauGen) {
+					m_tauGenleptonHisto->Fill("Nothing, failed Recos bad jets", event.eventWeight);
+				}
+			}
+			if(event.oneLepton){
+				m_leptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				if(event.failedGenPtEta){
+					m_failGenleptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				} else if(event.mixedGen){
+					m_mixGenleptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				} else if(event.electronGen) {
+					m_electronGenleptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				} else if(event.muonGen) {
+					m_muonGenleptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				} else if(event.tauGen) {
+					m_tauGenleptonHisto->Fill("Nothing, failed Recos one lepton", event.eventWeight);
+				}	
+			}
+			if(!event.badJets && !event.oneLepton){
+				m_leptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				if(event.failedGenPtEta){
+					m_failGenleptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				} else if(event.mixedGen){
+					m_mixGenleptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				} else if(event.electronGen) {
+					m_electronGenleptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				} else if(event.muonGen) {
+					m_muonGenleptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				} else if(event.tauGen) {
+					m_tauGenleptonHisto->Fill("Nothing, failed Recos other", event.eventWeight);
+				}
+			}
 		}
 		if(event.passedMuonReco && event.passedElectronReco && event.nMinusOneFailMuon.size()==0 && event.nMinusOneFailElectron.size()==0) { 
-			////std::cout << "passed both electron and muon cuts and reco" << std::endl;
 			m_leptonHisto->Fill("passed Cuts, Both", event.eventWeight);
-			
+			if(event.failedGenPtEta){
+				m_failGenleptonHisto->Fill("passed Cuts, Both", event.eventWeight);
+			} else if(event.mixedGen){
+				m_mixGenleptonHisto->Fill("passed Cuts, Both", event.eventWeight);
+			} else if(event.electronGen) {
+				m_electronGenleptonHisto->Fill("passed Cuts, Both", event.eventWeight);
+			} else if(event.muonGen) {
+				m_muonGenleptonHisto->Fill("passed Cuts, Both", event.eventWeight);
+			} else if(event.tauGen) {
+				m_tauGenleptonHisto->Fill("passed Cuts, Both", event.eventWeight);
+			}
 		}
+	}
+	if(event.passedMuonReco && event.nMinusOneFailMuon.size()==0){
+		m_massData->Fill();
+	} else if (event.passedElectronReco && event.nMinusOneFailElectron.size()==0){
+		m_massData->Fill();
 	}
 }
 
-
+//Fill muon specific histograms
 void eventHistos::fillMuon(eventBits& event){
 	double weight = event.eventWeight;
-	std::cout << "weight Muon" << weight << std::endl;
 
 	m_subMuJJhisto->Fill(event.subMuonleadJsubJRecoMass, weight);
 	m_l2MuJJhisto->Fill(event.matchedMuonleadJsubJRecoMass, weight);
@@ -733,11 +821,22 @@ void eventHistos::fillMuon(eventBits& event){
 	m_leadMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 	if(!event.passedElectronReco){
 		m_leptonHisto->Fill("passed Cuts, Muon", weight);
+		if(event.failedGenPtEta){
+			m_failGenleptonHisto->Fill("passed Cuts, Muon", weight);
+		} else if(event.mixedGen){
+			m_mixGenleptonHisto->Fill("passed Cuts, Muon", weight);
+		} else if(event.electronGen) {
+			m_electronGenleptonHisto->Fill("passed Cuts, Muon", weight);
+		} else if(event.muonGen) {
+			m_muonGenleptonHisto->Fill("passed Cuts, Muon", weight);
+		} else if(event.tauGen) {
+			m_tauGenleptonHisto->Fill("passed Cuts, Muon", weight);
+		}
 	}
 	
 	m_jetjetMassHisto->Fill(event.leadJsubJRecoMass, weight);
-	m_matchedMuon1MassHisto->Fill(event.muon1RecoMass, weight);
-	m_matchedMuon2MassHisto->Fill(event.muon2RecoMass, weight);
+	m_matchedMuon1MassHisto->Fill(event.muon1RecoMass, event.fullRecoMassMuon, weight);
+	m_matchedMuon2MassHisto->Fill(event.muon2RecoMass, event.fullRecoMassMuon, weight);
 
 	
 	m_muonEtaHisto1->Fill(event.match1MuonEta, weight);
@@ -795,62 +894,46 @@ void eventHistos::fillMuon(eventBits& event){
 	m_muon1SphericityHisto->Fill(event.sphericityMuon1, weight);
 	m_muon2SphericityHisto->Fill(event.sphericityMuon2, weight);
 	
-	
-	/*m_muonEtaHistoNN->Fill(event.leadRecoMuonEta, weight);
-		m_muonPhiHistoNN->Fill(event.leadRecoMuonPhi, weight);
-		m_muonDPhiHistoNN->Fill(event.leadRecoMuonDPhi, weight);
-		m_muonDRHistoNN->Fill(event.leadRecoMuonDR, weight);
-		m_muonPtHistoNN->Fill(event.leadRecoMuonPt, weight);
-		m_muonSphericityHistoNN->Fill(event.sphericityLeadMuon, weight);
-		m_muonEtaHistoWRNN->Fill(event.leadRecoMuonEtaWR, weight);
-		m_muonNMassHistoNN->Fill(event.leadMuonleadJsubJRecoMass, weight);*/
-	
-	/*m_muonEtaHistoNN->Fill(event.subRecoMuonEta, weight);
-		m_muonPhiHistoNN->Fill(event.subRecoMuonPhi, weight);
-		m_muonDPhiHistoNN->Fill(event.subRecoMuonDPhi, weight);
-		m_muonDRHistoNN->Fill(event.subRecoMuonDR, weight);
-		m_muonPtHistoNN->Fill(event.subRecoMuonPt, weight);
-		m_muonSphericityHistoNN->Fill(event.sphericitySubMuon, weight);
-		m_muonEtaHistoWRNN->Fill(event.subRecoMuonEtaWR, weight);
-		m_muonNMassHistoNN->Fill(event.subMuonleadJsubJRecoMass, weight);*/
 	if(event.nnResolvedPickedLeadMuon){
 		m_NNResolvedMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_notNNResolvedMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
+	
+		WRMass = event.fullRecoMassMuon;
+		resolvedNNMass = event.leadMuonleadJsubJRecoMass;
+		treeWeight = weight;
+		correctNMass = event.matchedMuonleadJsubJRecoMass;
+		incorrectNMass = event.muon1RecoMass;
+		leadNMass = event.leadMuonleadJsubJRecoMass;
+		subNMass = event.subMuonleadJsubJRecoMass;
+
 	} else if(event.nnResolvedPickedSubLeadMuon) {		
 		m_notNNResolvedMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_NNResolvedMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	}
-	if(event.nnLowMidPickedLeadMuon){
-		m_NNLowMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_notNNLowMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	} else if(event.nnLowMidPickedSubLeadMuon) {		
-		m_notNNLowMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_NNLowMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	}
-	if(event.nnMidPickedLeadMuon){
-		m_NNMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_notNNMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	} else if(event.nnMidPickedSubLeadMuon) {		
-		m_notNNMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_NNMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	}
-	if(event.nnHighMidPickedLeadMuon){
-		m_NNHighMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_notNNHighMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	} else if(event.nnHighMidPickedSubLeadMuon) {		
-		m_notNNHighMidMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-		m_NNHighMidMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
+		
+
+		WRMass = event.fullRecoMassMuon;
+		resolvedNNMass = event.subMuonleadJsubJRecoMass;
+		treeWeight = weight;
+		correctNMass = event.matchedMuonleadJsubJRecoMass;
+		incorrectNMass = event.muon1RecoMass;
+		leadNMass = event.leadMuonleadJsubJRecoMass;
+		subNMass = event.subMuonleadJsubJRecoMass;
+		
+
 	}
 	if(event.nnSuperResolvedPickedLeadMuon){
 		m_NNSuperResolvedMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_notNNSuperResolvedMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
+	
+		superResolvedNNMass = event.leadMuonleadJsubJRecoMass;
+
+	
 	} else if(event.nnSuperResolvedPickedSubLeadMuon) {		
 		m_notNNSuperResolvedMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_NNSuperResolvedMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
+	
+		superResolvedNNMass = event.subMuonleadJsubJRecoMass;
 	} 
-		
-	
-	
 	
 	if(abs(event.leadRecoMuonEta)<abs(event.subRecoMuonEta)){
 		m_lowEtaMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
@@ -859,21 +942,19 @@ void eventHistos::fillMuon(eventBits& event){
 		m_highEtaMuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_lowEtaMuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 	}
-	if(event.leadMuonleadJRecodr2 + event.leadMuonsubJRecodr2 < event.subMuonleadJRecodr2 + event.subMuonsubJRecodr2){
+	if(event.leadMuonJJRecodr2 < event.subleadMuonJJRecodr2){
 		m_lowR2MuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_highR2MuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 	} else {
 		m_highR2MuonHisto->Fill(event.leadMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
 		m_lowR2MuonHisto->Fill(event.subMuonleadJsubJRecoMass, event.fullRecoMassMuon, weight);
-	}
-	
+	}	
 }
 
-
+//Fill electron specific histograms
 void eventHistos::fillElectron(eventBits& event){
 	double weight = event.eventWeight;
-	std::cout << "weight Electron" << weight << "" << event.subElectronleadJsubJRecoMass << "" << event.leadElectronleadJsubJRecoMass << "" << event.fullRecoMassElectron << std::endl;
-		
+	
 	m_subElectronJJhisto->Fill(event.subElectronleadJsubJRecoMass, weight);
 	m_l2ElectronJJhisto->Fill(event.matchedElectronleadJsubJRecoMass, weight);
 	m_matchedElectronHisto->Fill(event.matchedElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
@@ -882,11 +963,22 @@ void eventHistos::fillElectron(eventBits& event){
 	
 	if(!event.passedMuonReco){
 		m_leptonHisto->Fill("passed Cuts, Electron", weight);
+		if(event.failedGenPtEta){
+			m_failGenleptonHisto->Fill("passed Cuts, Electron", weight);
+		} else if(event.mixedGen){
+			m_mixGenleptonHisto->Fill("passed Cuts, Electron", weight);
+		} else if(event.electronGen) {
+			m_electronGenleptonHisto->Fill("passed Cuts, Electron", weight);
+		} else if(event.muonGen) {
+			m_muonGenleptonHisto->Fill("passed Cuts, Electron", weight);
+		} else if(event.tauGen) {
+			m_tauGenleptonHisto->Fill("passed Cuts, Electron", weight);
+		}
 	}
 	
 	m_jetjetMassHisto->Fill(event.leadJsubJRecoMass, weight);
-	m_matchedElectron1MassHisto->Fill(event.electron1RecoMass, weight);
-	m_matchedElectron2MassHisto->Fill(event.electron2RecoMass, weight);
+	m_matchedElectron1MassHisto->Fill(event.electron1RecoMass, event.fullRecoMassElectron, weight);
+	m_matchedElectron2MassHisto->Fill(event.electron2RecoMass, event.fullRecoMassElectron, weight);
 	
 	
 	m_electronEtaHisto1->Fill(event.match1ElectronEta, weight);
@@ -943,94 +1035,55 @@ void eventHistos::fillElectron(eventBits& event){
 	
 	m_electron1SphericityHisto->Fill(event.sphericityElectron1, weight);
 	m_electron2SphericityHisto->Fill(event.sphericityElectron2, weight);
-	
-	/*
-	if(event.nnPickedLeadElectron){
-		m_electronEtaHistoNN->Fill(event.leadRecoElectronEta, weight);
-		m_electronPhiHistoNN->Fill(event.leadRecoElectronPhi, weight);
-		m_electronDPhiHistoNN->Fill(event.leadRecoElectronDPhi, weight);
-		m_electronDRHistoNN->Fill(event.leadRecoElectronDR, weight);
-		m_electronPtHistoNN->Fill(event.leadRecoElectronPt, weight);
-		m_electronSphericityHistoNN->Fill(event.sphericityLeadElectron, weight);
-		m_electronEtaHistoWRNN->Fill(event.leadRecoElectronEtaWR, weight);
-		m_electronNMassHistoNN->Fill(event.leadElectronleadJsubJRecoMass, weight);
-		
-		m_NNElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_notNNElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		
-	} else {
-		m_electronEtaHistoNN->Fill(event.subRecoElectronEta, weight);
-		m_electronPhiHistoNN->Fill(event.subRecoElectronPhi, weight);
-		m_electronDPhiHistoNN->Fill(event.subRecoElectronDPhi, weight);
-		m_electronDRHistoNN->Fill(event.subRecoElectronDR, weight);
-		m_electronPtHistoNN->Fill(event.subRecoElectronPt, weight);
-		m_electronSphericityHistoNN->Fill(event.sphericitySubElectron, weight);
-		m_electronEtaHistoWRNN->Fill(event.subRecoElectronEtaWR, weight);
-		m_electronNMassHistoNN->Fill(event.subElectronleadJsubJRecoMass, weight);
-		
-		m_NNElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_notNNElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	}*/
-	
+
 	if(event.nnResolvedPickedLeadElectron){
 		m_NNResolvedElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_notNNResolvedElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
+		
+		WRMass = event.fullRecoMassElectron;
+		resolvedNNMass = event.leadElectronleadJsubJRecoMass;
+		treeWeight = weight;
+		correctNMass = event.matchedElectronleadJsubJRecoMass;
+		incorrectNMass = event.electron1RecoMass;
+		leadNMass = event.leadElectronleadJsubJRecoMass;
+		subNMass = event.subElectronleadJsubJRecoMass;
+
 	} else if(event.nnResolvedPickedSubLeadElectron) {		
 		m_notNNResolvedElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_NNResolvedElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	} 
-	if(event.nnLowMidPickedLeadElectron){
-		m_NNLowMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_notNNLowMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	} else if(event.nnLowMidPickedSubLeadElectron) {		
-		m_notNNLowMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_NNLowMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
+		
+		
+		WRMass = event.fullRecoMassElectron;
+		resolvedNNMass = event.subElectronleadJsubJRecoMass;
+		treeWeight = weight;
+		correctNMass = event.matchedElectronleadJsubJRecoMass;
+		incorrectNMass = event.electron1RecoMass;
+		leadNMass = event.leadElectronleadJsubJRecoMass;
+		subNMass = event.subElectronleadJsubJRecoMass;
 	}
-	if(event.nnMidPickedLeadElectron){
-		m_NNMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_notNNMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	} else if(event.nnMidPickedSubLeadElectron) {		
-		m_notNNMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_NNMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	} 
-	if(event.nnHighMidPickedLeadElectron){
-		m_NNHighMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_notNNHighMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	} else if(event.nnHighMidPickedSubLeadElectron) {		
-		m_notNNHighMidElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_NNHighMidElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-	}
+
 	if(event.nnSuperResolvedPickedLeadElectron){
 		m_NNSuperResolvedElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_notNNSuperResolvedElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
+		
+		superResolvedNNMass = event.leadElectronleadJsubJRecoMass;
+		
 	} else if(event.nnSuperResolvedPickedSubLeadElectron) {		
 		m_notNNSuperResolvedElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_NNSuperResolvedElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
+	
+		superResolvedNNMass = event.subElectronleadJsubJRecoMass;
 	} 
-	
-	
-	
-	
-	
+
+
 	if(abs(event.leadRecoElectronEta)<abs(event.subRecoElectronEta)){
 		m_lowEtaElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		m_highEtaElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		std::cout << "highEtaElectronHisto" << std::endl;
-		std::cout << event.subElectronleadJsubJRecoMass << std::endl;
-		std::cout << event.fullRecoMassElectron << std::endl;
-		std::cout << weight << std::endl;
-		
-		
-		
+		m_highEtaElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);		
 	} else {
 		m_highEtaElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_lowEtaElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
-		std::cout << "highEtaElectronHisto" << std::endl;
-		std::cout << event.leadElectronleadJsubJRecoMass << std::endl;
-		std::cout << event.fullRecoMassElectron << std::endl;
-		std::cout << weight << std::endl;
 	}
-	if(event.leadElectronleadJRecodr2+event.leadElectronsubJRecodr2<event.subElectronleadJRecodr2+event.subElectronsubJRecodr2){
+	if(event.leadElectronJJRecodr2<event.subleadElectronJJRecodr2){
 		m_lowR2ElectronHisto->Fill(event.leadElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 		m_highR2ElectronHisto->Fill(event.subElectronleadJsubJRecoMass, event.fullRecoMassElectron, weight);
 	} else {
@@ -1039,6 +1092,7 @@ void eventHistos::fillElectron(eventBits& event){
 	}
 }
 
+//Fill nMinusOne histos if electron fails
 void eventHistos::fillNMinusOneFailElectron(eventBits& event){
 	double weight = event.eventWeight;
 	
@@ -1048,6 +1102,7 @@ void eventHistos::fillNMinusOneFailElectron(eventBits& event){
 	}
 }
 
+//Fill nMinusOne histos if electron passes
 void eventHistos::fillNMinusOnePassElectron(eventBits& event){
 	double weight = event.eventWeight;
 	
@@ -1057,6 +1112,7 @@ void eventHistos::fillNMinusOnePassElectron(eventBits& event){
 	}
 }
 
+//Fill nMinusOne histos if a muon fails
 void eventHistos::fillNMinusOneFailMuon(eventBits& event){
 	double weight = event.eventWeight;
 	
@@ -1066,6 +1122,7 @@ void eventHistos::fillNMinusOneFailMuon(eventBits& event){
 	}
 }
 
+//Fill the n Minus One histos if a muon passes
 void eventHistos::fillNMinusOnePassMuon(eventBits& event){
 	double weight = event.eventWeight;
 	

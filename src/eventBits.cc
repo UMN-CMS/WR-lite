@@ -1,4 +1,4 @@
-#include "ExoAnalysis/WR-lite/interface/eventBits.h"
+#include "ExoAnalysis/WR_lite/interface/eventBits.h"
 
 #include <list>
 #include <string>
@@ -15,31 +15,35 @@ eventBits::eventBits() {
 	mixedLeptons = false;
 	passedElectronReco = false;
 	passedMuonReco = false;
-	correctNN = false;
-	extraLeptons = false;
+	mixedGen = false;
+	electronGen = false;
+	muonGen = false;
+	tauGen = false;
+	hasPVertex = false;
 	
+	//Failure Conditions
+	extraLeptons = false;
+	failedGenPtEta = false;
+	badJets = false;
+	oneLepton = false;
+	
+	//NN Results
 	nnResolvedPickedLeadElectron = false;
 	nnResolvedPickedLeadMuon = false;
-	nnLowMidPickedLeadElectron = false;
-	nnLowMidPickedLeadMuon = false;
-	nnMidPickedLeadElectron = false;
-	nnHighMidPickedLeadMuon = false;
-	nnHighMidPickedLeadElectron = false;
-	nnMidPickedLeadMuon = false;	
 	nnSuperResolvedPickedLeadElectron = false;
 	nnSuperResolvedPickedLeadMuon = false;
 	
 	nnResolvedPickedSubLeadElectron = false;
 	nnResolvedPickedSubLeadMuon = false;
-	nnLowMidPickedSubLeadElectron = false;
-	nnLowMidPickedSubLeadMuon = false;
-	nnMidPickedSubLeadElectron = false;
-	nnMidPickedSubLeadMuon = false;
-	nnHighMidPickedSubLeadMuon = false;
-	nnHighMidPickedSubLeadElectron = false;	
 	nnSuperResolvedPickedSubLeadElectron = false;
 	nnSuperResolvedPickedSubLeadMuon = false;
-
+	
+	//Gen Values
+	leadLeptonPt = -10000.0;
+	leadLeptonType = -10000.0;
+	subleadLeptonPt = -10000.0;
+	subleadLeptonType = -10000.0;
+	
 	quark1Eta = -10000.0;
 	quark1Phi = -10000.0;
 	quark1Mass = -10000.0;
@@ -55,13 +59,16 @@ eventBits::eventBits() {
 	lepton1Mass = -10000.0;
 	lepton1Pt = -10000.0;
 	lepton1Id = -10000;
-	
+
 	lepton2Eta = -10000.0;
 	lepton2Phi = -10000.0;
 	lepton2Mass = -10000.0;
 	lepton2Pt = -10000.0;
 	lepton2Id = -10000;
 	
+	//Reco values
+	
+	//Jets
 	leadJetRecoEta = -10000.0;
 	leaJetRecoPhi = -10000.0;
 	leadJetRecoMass = -10000.0;
@@ -72,63 +79,85 @@ eventBits::eventBits() {
 	subJetRecoMass = -10000.0;
 	subJetRecoPt = -10000.0;
 
+	//Electrons	
 	subRecoElectronEta = -10000.0;
 	subRecoElectronPhi = -10000.0;
 	subRecoElectronMass = -10000.0;
 	subRecoElectronPt = -10000.0;
+	subRecoElectronDPhi = -10000.0;
+	subRecoElectronDR = -10000.0;
+	subRecoElectronEtaWR = -10000.0;
 	
 	leadRecoElectronEta = -10000.0;
 	leadRecoElectronPhi = -10000.0;
 	leadRecoElectronMass = -10000.0;
 	leadRecoElectronPt = -10000.0;
+	leadRecoElectronDPhi = -10000.0;
+	leadRecoElectronDR = -10000.0;
+	leadRecoElectronEtaWR = -10000.0;
 
+	//Muons
+	subRecoMuonEta = -10000.0;
+	subRecoMuonPhi = -10000.0;
+	subRecoMuonMass = -10000.0;
+	subRecoMuonPt = -10000.0;
+	subRecoMuonDPhi = -10000.0;
+	subRecoMuonDR = -10000.0;
+	subRecoMuonEtaWR = -10000.0;
+	
+	leadRecoMuonEta = -10000.0;
+	leadRecoMuonPhi = -10000.0;
+	leadRecoMuonMass = -10000.0;
+	leadRecoMuonPt = -10000.0;
+	leadRecoMuonDPhi = -10000.0;
+	leadRecoMuonDR = -10000.0;
+	leadRecoMuonEtaWR = -10000.0;
+	
+	//Combinations
+	
+	WRMass = -10000.0;
+	NMass = -10000.0;
+	
+	leadJsubJRecoMass = -10000.0;
+	leadJsubJRecoMassError = -10000.0;
+	
+	
 	subElectronleadElectronRecodr2 = -10000.0;
 	subElectronleadJRecodr2 = -10000.0;
 	subElectronsubJRecodr2 = -10000.0;
+	subleadElectronJJRecodr2 = -10000.0;
 	leadElectronleadJRecodr2 = -10000.0;
 	leadElectronsubJRecodr2 = -10000.0;
 	leadJsubJdr2 = -10000.0;
+	leadElectronJJRecodr2 = -10000.0;
 
 	leadElectronsubElectronRecoMass = -10000.0;
 	subElectronleadJsubJRecoMass = -10000.0;
 	leadElectronleadJsubJRecoMass = -10000.0;
 	matchedElectronleadJsubJRecoMass = -10000.0;
 
-	leadJsubJRecoMass = -10000.0;
-	electron1RecoMass = -10000.0;
-	electron2RecoMass = -10000.0;
-	leadJsubJRecoMassError = -10000.0;
-	electron1RecoMassError = -10000.0;
-	electron2RecoMassError = -10000.0;
-
-	fullRecoMassElectron = -10000.0;
-
-	subRecoMuonEta = -10000.0;
-	subRecoMuonPhi = -10000.0;
-	subRecoMuonMass = -10000.0;
-	subRecoMuonPt = -10000.0;
-
-	leadRecoMuonEta = -10000.0;
-	leadRecoMuonPhi = -10000.0;
-	leadRecoMuonMass = -10000.0;
-	leadRecoMuonPt = -10000.0;
-
 	subMuonleadMuonRecodr2 = -10000.0;
 	subMuonleadJRecodr2 = -10000.0;
 	subMuonsubJRecodr2 = -10000.0;
+	subleadMuonJJRecodr2 = -10000.0;
 	leadMuonleadJRecodr2 = -10000.0;
 	leadMuonsubJRecodr2 = -10000.0;
+	leadMuonJJRecodr2 = -10000.0;
 
 	leadMuonsubMuonRecoMass = -10000.0;
 	subMuonleadJsubJRecoMass = -10000.0;
 	leadMuonleadJsubJRecoMass = -10000.0;
 	matchedMuonleadJsubJRecoMass = -10000.0;
 
-	muon1RecoMass = -10000.0;
-	muon2RecoMass = -10000.0;
-
+    fullRecoMassElectron = -10000.0;
 	fullRecoMassMuon = -10000.0;
 	
+	//Matched Reco values
+	
+	//Electrons
+	
+	sphericityElectron1 = -10000.0;
+	sphericityElectron2 = -10000.0;
 	
 	match1ElectronEta = -10000.0;
 	match1ElectronPhi = -10000.0;
@@ -136,17 +165,78 @@ eventBits::eventBits() {
 	match1ElectronDR = -10000.0;
 	match1ElectronPt = -10000.0;
 
+	match1ElectronEtaWR = -10000.0;
+	match1ElectronPhiWR = -10000.0;
+	match1ElectronDPhiWR = -10000.0;
+	match1ElectronDRWR = -10000.0;
+	match1ElectronPtWR = -10000.0;
+	
+	match1ElectronEtaL1 = -10000.0;
+	match1ElectronPhiL1 = -10000.0;
+	match1ElectronDPhiL1 = -10000.0;
+	match1ElectronDRL1 = -10000.0;
+	match1ElectronPtL1 = -10000.0;
+	
+	match1ElectronEtaJJL1 = -10000.0;
+	match1ElectronPhiJJL1 = -10000.0;
+	match1ElectronDPhiJJL1 = -10000.0;
+	match1ElectronDRJJL1 = -10000.0;
+	match1ElectronPtJJL1 = -10000.0;
+	
+	
+	
 	match2ElectronEta = -10000.0;
 	match2ElectronPhi = -10000.0;
 	match2ElectronDPhi = -10000.0;
 	match2ElectronDR = -10000.0;
 	match2ElectronPt = -10000.0;
+	
+	match2ElectronEtaWR = -10000.0;
+	match2ElectronPhiWR = -10000.0;
+	match2ElectronDPhiWR = -10000.0;
+	match2ElectronDRWR = -10000.0;
+	match2ElectronPtWR = -10000.0;
+	
+	match2ElectronEtaL2 = -10000.0;
+	match2ElectronPhiL2 = -10000.0;
+	match2ElectronDPhiL2 = -10000.0;
+	match2ElectronDRL2 = -10000.0;
+	match2ElectronPtL2 = -10000.0;
+	
+	match2ElectronEtaJJL2 = -10000.0;
+	match2ElectronPhiJJL2 = -10000.0;
+	match2ElectronDPhiJJL2 = -10000.0;
+	match2ElectronDRJJL2 = -10000.0;
+	match2ElectronPtJJL2 = -10000.0;
 
+	//Muons
+	
+	sphericityMuon1 = -10000.0;
+	sphericityMuon2 = -10000.0;
+	
 	match1MuonEta = -10000.0;
 	match1MuonPhi = -10000.0;
 	match1MuonDPhi = -10000.0;
 	match1MuonDR = -10000.0;
 	match1MuonPt = -10000.0;
+	
+	match1MuonEtaWR = -10000.0;
+	match1MuonPhiWR = -10000.0;
+	match1MuonDPhiWR = -10000.0;
+	match1MuonDRWR = -10000.0;
+	match1MuonPtWR = -10000.0;
+	
+	match1MuonEtaL1 = -10000.0;
+	match1MuonPhiL1 = -10000.0;
+	match1MuonDPhiL1 = -10000.0;
+	match1MuonDRL1 = -10000.0;
+	match1MuonPtL1 = -10000.0;
+	
+	match1MuonEtaJJL1 = -10000.0;
+	match1MuonPhiJJL1 = -10000.0;
+	match1MuonDPhiJJL1 = -10000.0;
+	match1MuonDRJJL1 = -10000.0;
+	match1MuonPtJJL1 = -10000.0;
 
 	match2MuonEta = -10000.0;
 	match2MuonPhi = -10000.0;
@@ -154,23 +244,17 @@ eventBits::eventBits() {
 	match2MuonDR = -10000.0;
 	match2MuonPt = -10000.0;
 	
-	match1ElectronEtaWR = -10000.0;
-	match1ElectronPhiWR = -10000.0;
-	match1ElectronDPhiWR = -10000.0;
-	match1ElectronDRWR = -10000.0;
-	match1ElectronPtWR = -10000.0;
-
-	match2ElectronEtaWR = -10000.0;
-	match2ElectronPhiWR = -10000.0;
-	match2ElectronDPhiWR = -10000.0;
-	match2ElectronDRWR = -10000.0;
-	match2ElectronPtWR = -10000.0;
-
-	match1MuonEtaWR = -10000.0;
-	match1MuonPhiWR = -10000.0;
-	match1MuonDPhiWR = -10000.0;
-	match1MuonDRWR = -10000.0;
-	match1MuonPtWR = -10000.0;
+	match2MuonEtaL2 = -10000.0;
+	match2MuonPhiL2 = -10000.0;
+	match2MuonDPhiL2 = -10000.0;
+	match2MuonDRL2 = -10000.0;
+	match2MuonPtL2 = -10000.0;
+	
+	match2MuonEtaJJL2 = -10000.0;
+	match2MuonPhiJJL2 = -10000.0;
+	match2MuonDPhiJJL2 = -10000.0;
+	match2MuonDRJJL2 = -10000.0;
+	match2MuonPtJJL2 = -10000.0;
 
 	match2MuonEtaWR = -10000.0;
 	match2MuonPhiWR = -10000.0;
@@ -178,92 +262,19 @@ eventBits::eventBits() {
 	match2MuonDRWR = -10000.0;
 	match2MuonPtWR = -10000.0;
 
-	match1ElectronEtaJJL1 = -10000.0;
-	match1ElectronPhiJJL1 = -10000.0;
-	match1ElectronDPhiJJL1 = -10000.0;
-	match1ElectronDRJJL1 = -10000.0;
-	match1ElectronPtJJL1 = -10000.0;
-
-	match2ElectronEtaJJL2 = -10000.0;
-	match2ElectronPhiJJL2 = -10000.0;
-	match2ElectronDPhiJJL2 = -10000.0;
-	match2ElectronDRJJL2 = -10000.0;
-	match2ElectronPtJJL2 = -10000.0;
-
-	match1MuonEtaJJL1 = -10000.0;
-	match1MuonPhiJJL1 = -10000.0;
-	match1MuonDPhiJJL1 = -10000.0;
-	match1MuonDRJJL1 = -10000.0;
-	match1MuonPtJJL1 = -10000.0;
-
-	match2MuonEtaJJL2 = -10000.0;
-	match2MuonPhiJJL2 = -10000.0;
-	match2MuonDPhiJJL2 = -10000.0;
-	match2MuonDRJJL2 = -10000.0;
-	match2MuonPtJJL2 = -10000.0;
-
-	match1ElectronEtaL1 = -10000.0;
-	match1ElectronPhiL1 = -10000.0;
-	match1ElectronDPhiL1 = -10000.0;
-	match1ElectronDRL1 = -10000.0;
-	match1ElectronPtL1 = -10000.0;
-
-	match2ElectronEtaL2 = -10000.0;
-	match2ElectronPhiL2 = -10000.0;
-	match2ElectronDPhiL2 = -10000.0;
-	match2ElectronDRL2 = -10000.0;
-	match2ElectronPtL2 = -10000.0;
-
-	match1MuonEtaL1 = -10000.0;
-	match1MuonPhiL1 = -10000.0;
-	match1MuonDPhiL1 = -10000.0;
-	match1MuonDRL1 = -10000.0;
-	match1MuonPtL1 = -10000.0;
-
-	match2MuonEtaL2 = -10000.0;
-	match2MuonPhiL2 = -10000.0;
-	match2MuonDPhiL2 = -10000.0;
-	match2MuonDRL2 = -10000.0;
-	match2MuonPtL2 = -10000.0;
 	
-	match2MuonEtaL2 = -10000.0;
-	match2MuonPhiL2 = -10000.0;
-	match2MuonDPhiL2 = -10000.0;
-	match2MuonDRL2 = -10000.0;
-	match2MuonPtL2 = -10000.0;
-
-	sphericityElectron1 = -10000.0;
-	sphericityMuon1 = -10000.0;
-	sphericityElectron2 = -10000.0;
-	sphericityMuon2 = -10000.0;
-	
-	sphericitySubElectron = -10000.0;
-	sphericityLeadElectron = -10000.0;
-	sphericitySubMuon = -10000.0;
-	sphericityLeadMuon = -10000.0;
-	
-	subRecoElectronDPhi = -10000.0;
-	subRecoElectronDR = -10000.0;
-	leadRecoElectronDPhi = -10000.0;
-	leadRecoElectronDR = -10000.0;
-
-	subRecoMuonDPhi = -10000.0;
-	subRecoMuonDR = -10000.0;
-	leadRecoMuonDPhi = -10000.0;
-	leadRecoMuonDR = -10000.0;
-	
-	WRMass = -10000.0;
-	NMass = -10000.0;
-	
-	leadRecoElectronEtaWR = -10000.0;
-	subRecoElectronEtaWR = -10000.0;
-	leadRecoMuonEtaWR = -10000.0;
-	subRecoMuonEtaWR = -10000.0;
+	//Combinations
+	electron1RecoMass = -10000.0;
+	electron2RecoMass = -10000.0;
+    
+	muon1RecoMass = -10000.0;
+	muon2RecoMass = -10000.0;
 }
 
 void eventBits::clear() {
 	//EVENT WEIGHT
 	eventWeight = 0.0;
+	count = 0.0;
 
 	//EVENT VALUES
 	twoElectrons = false;
@@ -271,36 +282,41 @@ void eventBits::clear() {
 	mixedLeptons = false;
 	passedElectronReco = false;
 	passedMuonReco = false;
-	correctNN = false;
-	extraLeptons = false;
+	mixedGen = false;
+	electronGen = false;
+	muonGen = false;
+	tauGen = false;
+	hasPVertex = false;
 	
+	//Failure Conditions
+	extraLeptons = false;
+	failedGenPtEta = false;
+	badJets = false;
+	oneLepton = false;
+	
+	//NN Results
 	nnResolvedPickedLeadElectron = false;
 	nnResolvedPickedLeadMuon = false;
-	nnLowMidPickedLeadElectron = false;
-	nnLowMidPickedLeadMuon = false;
-	nnMidPickedLeadElectron = false;
-	nnMidPickedLeadMuon = false;
-	nnHighMidPickedLeadMuon = false;
-	nnHighMidPickedLeadElectron = false;	
 	nnSuperResolvedPickedLeadElectron = false;
 	nnSuperResolvedPickedLeadMuon = false;
 	
 	nnResolvedPickedSubLeadElectron = false;
 	nnResolvedPickedSubLeadMuon = false;
-	nnLowMidPickedSubLeadElectron = false;
-	nnLowMidPickedSubLeadMuon = false;
-	nnMidPickedSubLeadElectron = false;
-	nnMidPickedSubLeadMuon = false;	
-	nnHighMidPickedSubLeadMuon = false;
-	nnHighMidPickedSubLeadElectron = false;
 	nnSuperResolvedPickedSubLeadElectron = false;
 	nnSuperResolvedPickedSubLeadMuon = false;
 	
+	//nMinusOne Information
 	nMinusOnePassElectron.clear();
 	nMinusOneFailElectron.clear();
 	nMinusOnePassMuon.clear();
 	nMinusOneFailMuon.clear();
 
+	//Gen Values
+	leadLeptonPt = -10000.0;
+	leadLeptonType = -10000.0;
+	subleadLeptonPt = -10000.0;
+	subleadLeptonType = -10000.0;
+	
 	quark1Eta = -10000.0;
 	quark1Phi = -10000.0;
 	quark1Mass = -10000.0;
@@ -322,7 +338,10 @@ void eventBits::clear() {
 	lepton2Mass = -10000.0;
 	lepton2Pt = -10000.0;
 	lepton2Id = -10000;
-
+	
+	//Reco values
+	
+	//Jets
 	leadJetRecoEta = -10000.0;
 	leaJetRecoPhi = -10000.0;
 	leadJetRecoMass = -10000.0;
@@ -333,62 +352,85 @@ void eventBits::clear() {
 	subJetRecoMass = -10000.0;
 	subJetRecoPt = -10000.0;
 
+	//Electrons	
 	subRecoElectronEta = -10000.0;
 	subRecoElectronPhi = -10000.0;
 	subRecoElectronMass = -10000.0;
 	subRecoElectronPt = -10000.0;
+	subRecoElectronDPhi = -10000.0;
+	subRecoElectronDR = -10000.0;
+	subRecoElectronEtaWR = -10000.0;
 	
 	leadRecoElectronEta = -10000.0;
 	leadRecoElectronPhi = -10000.0;
 	leadRecoElectronMass = -10000.0;
 	leadRecoElectronPt = -10000.0;
+	leadRecoElectronDPhi = -10000.0;
+	leadRecoElectronDR = -10000.0;
+	leadRecoElectronEtaWR = -10000.0;
 
+	//Muons
+	subRecoMuonEta = -10000.0;
+	subRecoMuonPhi = -10000.0;
+	subRecoMuonMass = -10000.0;
+	subRecoMuonPt = -10000.0;
+	subRecoMuonDPhi = -10000.0;
+	subRecoMuonDR = -10000.0;
+	subRecoMuonEtaWR = -10000.0;
+	
+	leadRecoMuonEta = -10000.0;
+	leadRecoMuonPhi = -10000.0;
+	leadRecoMuonMass = -10000.0;
+	leadRecoMuonPt = -10000.0;
+	leadRecoMuonDPhi = -10000.0;
+	leadRecoMuonDR = -10000.0;
+	leadRecoMuonEtaWR = -10000.0;
+	
+	//Combinations
+	
+	WRMass = -10000.0;
+	NMass = -10000.0;
+	
+	leadJsubJRecoMass = -10000.0;
+	leadJsubJRecoMassError = -10000.0;
+	
+	
 	subElectronleadElectronRecodr2 = -10000.0;
 	subElectronleadJRecodr2 = -10000.0;
 	subElectronsubJRecodr2 = -10000.0;
+	subleadElectronJJRecodr2 = -10000.0;
 	leadElectronleadJRecodr2 = -10000.0;
 	leadElectronsubJRecodr2 = -10000.0;
 	leadJsubJdr2 = -10000.0;
+	leadElectronJJRecodr2 = -10000.0;
 
 	leadElectronsubElectronRecoMass = -10000.0;
 	subElectronleadJsubJRecoMass = -10000.0;
 	leadElectronleadJsubJRecoMass = -10000.0;
 	matchedElectronleadJsubJRecoMass = -10000.0;
 
-	leadJsubJRecoMass = -10000.0;
-	electron1RecoMass = -10000.0;
-	electron2RecoMass = -10000.0;
-	leadJsubJRecoMassError = -10000.0;
-	electron1RecoMassError = -10000.0;
-	electron2RecoMassError = -10000.0;
-
-	fullRecoMassElectron = -10000.0;
-
-	subRecoMuonEta = -10000.0;
-	subRecoMuonPhi = -10000.0;
-	subRecoMuonMass = -10000.0;
-	subRecoMuonPt = -10000.0;
-
-	leadRecoMuonEta = -10000.0;
-	leadRecoMuonPhi = -10000.0;
-	leadRecoMuonMass = -10000.0;
-	leadRecoMuonPt = -10000.0;
-
 	subMuonleadMuonRecodr2 = -10000.0;
 	subMuonleadJRecodr2 = -10000.0;
 	subMuonsubJRecodr2 = -10000.0;
+	subleadMuonJJRecodr2 = -10000.0;
 	leadMuonleadJRecodr2 = -10000.0;
 	leadMuonsubJRecodr2 = -10000.0;
+	leadMuonJJRecodr2 = -10000.0;
 
 	leadMuonsubMuonRecoMass = -10000.0;
 	subMuonleadJsubJRecoMass = -10000.0;
 	leadMuonleadJsubJRecoMass = -10000.0;
 	matchedMuonleadJsubJRecoMass = -10000.0;
 
-	muon1RecoMass = -10000.0;
-	muon2RecoMass = -10000.0;
-
+    fullRecoMassElectron = -10000.0;
 	fullRecoMassMuon = -10000.0;
+	
+	//Matched Reco values
+	
+	//Electrons
+	
+	sphericityElectron1 = -10000.0;
+	sphericityElectron2 = -10000.0;
 	
 	match1ElectronEta = -10000.0;
 	match1ElectronPhi = -10000.0;
@@ -396,17 +438,78 @@ void eventBits::clear() {
 	match1ElectronDR = -10000.0;
 	match1ElectronPt = -10000.0;
 
+	match1ElectronEtaWR = -10000.0;
+	match1ElectronPhiWR = -10000.0;
+	match1ElectronDPhiWR = -10000.0;
+	match1ElectronDRWR = -10000.0;
+	match1ElectronPtWR = -10000.0;
+	
+	match1ElectronEtaL1 = -10000.0;
+	match1ElectronPhiL1 = -10000.0;
+	match1ElectronDPhiL1 = -10000.0;
+	match1ElectronDRL1 = -10000.0;
+	match1ElectronPtL1 = -10000.0;
+	
+	match1ElectronEtaJJL1 = -10000.0;
+	match1ElectronPhiJJL1 = -10000.0;
+	match1ElectronDPhiJJL1 = -10000.0;
+	match1ElectronDRJJL1 = -10000.0;
+	match1ElectronPtJJL1 = -10000.0;
+	
+	
+	
 	match2ElectronEta = -10000.0;
 	match2ElectronPhi = -10000.0;
 	match2ElectronDPhi = -10000.0;
 	match2ElectronDR = -10000.0;
 	match2ElectronPt = -10000.0;
+	
+	match2ElectronEtaWR = -10000.0;
+	match2ElectronPhiWR = -10000.0;
+	match2ElectronDPhiWR = -10000.0;
+	match2ElectronDRWR = -10000.0;
+	match2ElectronPtWR = -10000.0;
+	
+	match2ElectronEtaL2 = -10000.0;
+	match2ElectronPhiL2 = -10000.0;
+	match2ElectronDPhiL2 = -10000.0;
+	match2ElectronDRL2 = -10000.0;
+	match2ElectronPtL2 = -10000.0;
+	
+	match2ElectronEtaJJL2 = -10000.0;
+	match2ElectronPhiJJL2 = -10000.0;
+	match2ElectronDPhiJJL2 = -10000.0;
+	match2ElectronDRJJL2 = -10000.0;
+	match2ElectronPtJJL2 = -10000.0;
 
+	//Muons
+	
+	sphericityMuon1 = -10000.0;
+	sphericityMuon2 = -10000.0;
+	
 	match1MuonEta = -10000.0;
 	match1MuonPhi = -10000.0;
 	match1MuonDPhi = -10000.0;
 	match1MuonDR = -10000.0;
 	match1MuonPt = -10000.0;
+	
+	match1MuonEtaWR = -10000.0;
+	match1MuonPhiWR = -10000.0;
+	match1MuonDPhiWR = -10000.0;
+	match1MuonDRWR = -10000.0;
+	match1MuonPtWR = -10000.0;
+	
+	match1MuonEtaL1 = -10000.0;
+	match1MuonPhiL1 = -10000.0;
+	match1MuonDPhiL1 = -10000.0;
+	match1MuonDRL1 = -10000.0;
+	match1MuonPtL1 = -10000.0;
+	
+	match1MuonEtaJJL1 = -10000.0;
+	match1MuonPhiJJL1 = -10000.0;
+	match1MuonDPhiJJL1 = -10000.0;
+	match1MuonDRJJL1 = -10000.0;
+	match1MuonPtJJL1 = -10000.0;
 
 	match2MuonEta = -10000.0;
 	match2MuonPhi = -10000.0;
@@ -414,23 +517,17 @@ void eventBits::clear() {
 	match2MuonDR = -10000.0;
 	match2MuonPt = -10000.0;
 	
-	match1ElectronEtaWR = -10000.0;
-	match1ElectronPhiWR = -10000.0;
-	match1ElectronDPhiWR = -10000.0;
-	match1ElectronDRWR = -10000.0;
-	match1ElectronPtWR = -10000.0;
-
-	match2ElectronEtaWR = -10000.0;
-	match2ElectronPhiWR = -10000.0;
-	match2ElectronDPhiWR = -10000.0;
-	match2ElectronDRWR = -10000.0;
-	match2ElectronPtWR = -10000.0;
-
-	match1MuonEtaWR = -10000.0;
-	match1MuonPhiWR = -10000.0;
-	match1MuonDPhiWR = -10000.0;
-	match1MuonDRWR = -10000.0;
-	match1MuonPtWR = -10000.0;
+	match2MuonEtaL2 = -10000.0;
+	match2MuonPhiL2 = -10000.0;
+	match2MuonDPhiL2 = -10000.0;
+	match2MuonDRL2 = -10000.0;
+	match2MuonPtL2 = -10000.0;
+	
+	match2MuonEtaJJL2 = -10000.0;
+	match2MuonPhiJJL2 = -10000.0;
+	match2MuonDPhiJJL2 = -10000.0;
+	match2MuonDRJJL2 = -10000.0;
+	match2MuonPtJJL2 = -10000.0;
 
 	match2MuonEtaWR = -10000.0;
 	match2MuonPhiWR = -10000.0;
@@ -438,81 +535,13 @@ void eventBits::clear() {
 	match2MuonDRWR = -10000.0;
 	match2MuonPtWR = -10000.0;
 
-	match1ElectronEtaJJL1 = -10000.0;
-	match1ElectronPhiJJL1 = -10000.0;
-	match1ElectronDPhiJJL1 = -10000.0;
-	match1ElectronDRJJL1 = -10000.0;
-	match1ElectronPtJJL1 = -10000.0;
-
-	match2ElectronEtaJJL2 = -10000.0;
-	match2ElectronPhiJJL2 = -10000.0;
-	match2ElectronDPhiJJL2 = -10000.0;
-	match2ElectronDRJJL2 = -10000.0;
-	match2ElectronPtJJL2 = -10000.0;
-
-	match1MuonEtaJJL1 = -10000.0;
-	match1MuonPhiJJL1 = -10000.0;
-	match1MuonDPhiJJL1 = -10000.0;
-	match1MuonDRJJL1 = -10000.0;
-	match1MuonPtJJL1 = -10000.0;
-
-	match2MuonEtaJJL2 = -10000.0;
-	match2MuonPhiJJL2 = -10000.0;
-	match2MuonDPhiJJL2 = -10000.0;
-	match2MuonDRJJL2 = -10000.0;
-	match2MuonPtJJL2 = -10000.0;
-
-	match1ElectronEtaL1 = -10000.0;
-	match1ElectronPhiL1 = -10000.0;
-	match1ElectronDPhiL1 = -10000.0;
-	match1ElectronDRL1 = -10000.0;
-	match1ElectronPtL1 = -10000.0;
-
-	match2ElectronEtaL2 = -10000.0;
-	match2ElectronPhiL2 = -10000.0;
-	match2ElectronDPhiL2 = -10000.0;
-	match2ElectronDRL2 = -10000.0;
-	match2ElectronPtL2 = -10000.0;
-
-	match1MuonEtaL1 = -10000.0;
-	match1MuonPhiL1 = -10000.0;
-	match1MuonDPhiL1 = -10000.0;
-	match1MuonDRL1 = -10000.0;
-	match1MuonPtL1 = -10000.0;
-
-	match2MuonEtaL2 = -10000.0;
-	match2MuonPhiL2 = -10000.0;
-	match2MuonDPhiL2 = -10000.0;
-	match2MuonDRL2 = -10000.0;
-	match2MuonPtL2 = -10000.0;
 	
-	sphericityElectron1 = -10000.0;
-	sphericityMuon1 = -10000.0;
-	sphericityElectron2 = -10000.0;
-	sphericityMuon2 = -10000.0;
-	
-	sphericitySubElectron = -10000.0;
-	sphericityLeadElectron = -10000.0;
-	sphericitySubMuon = -10000.0;
-	sphericityLeadMuon = -10000.0;
-	
-	subRecoElectronDPhi = -10000.0;
-	subRecoElectronDR = -10000.0;
-	leadRecoElectronDPhi = -10000.0;
-	leadRecoElectronDR = -10000.0;
-
-	subRecoMuonDPhi = -10000.0;
-	subRecoMuonDR = -10000.0;
-	leadRecoMuonDPhi = -10000.0;
-	leadRecoMuonDR = -10000.0;
-	
-	WRMass = -10000.0;
-	NMass = -10000.0;
-	
-	leadRecoElectronEtaWR = -10000.0;
-	subRecoElectronEtaWR = -10000.0;
-	leadRecoMuonEtaWR = -10000.0;
-	subRecoMuonEtaWR = -10000.0;
+	//Combinations
+	electron1RecoMass = -10000.0;
+	electron2RecoMass = -10000.0;
+    
+	muon1RecoMass = -10000.0;
+	muon2RecoMass = -10000.0;
 	
 }
 
