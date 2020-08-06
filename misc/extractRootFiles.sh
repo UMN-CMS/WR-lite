@@ -1,5 +1,5 @@
 
-cd Version2/CMSSW_10_4_0_patch1/src/ExoAnalysis/WR_lite/DYJetsToLL_M-50_HT-100to200  
+cd Version3/CMSSW_10_4_0_patch1/src/ExoAnalysis/WR_lite/DYJetsToLL_M-50_HT-100to200  
 
 rm DY100to200.root
 hadd DY100to200.root *.root
@@ -36,7 +36,15 @@ cd ..
 scp -r DY*/DY*.root /home/kronh006
 scp -r TT*/TT*.root /home/kronh006
 
-cd WR1000_N200
+cd ..
+cd ..
+cd ..
+cd ..
+cd ..
+
+
+
+cd Version2/CMSSW_10_4_0_patch1/src/ExoAnalysis/WR_lite/WR1000_N200
 rm WR1000N200.root
 hadd WR1000N200.root *.root    
             
@@ -49,7 +57,7 @@ rm WR1000N600.root
 hadd WR1000N600.root *.root    
 
 cd ../WR1000_N800                 
-rm WR1000800.root
+rm WR1000N800.root
 hadd WR1000N800.root *.root    
 
 cd ../WR1000_N900                  
