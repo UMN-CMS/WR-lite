@@ -21,6 +21,7 @@ incorrectMassBranch = "incorrectNMass"
 leadMassBranch = "leadNMass"
 subleadMassBranch = "subNMass" 
 weightBranch =  "weight"
+weightBranch2 =  "weight2"
 
 
 #numpy arrays
@@ -43,6 +44,6 @@ for file in fileNames:
 
 	massTree = rootfile.Get("full"+file)
 
-	dataArray = tree2array(massTree, branches=[wrMassBranch,SRmassBranch,RmassBranch,correctMassBranch,incorrectMassBranch,leadMassBranch,subleadMassBranch,weightBranch])
+	dataArray = tree2array(massTree, branches=[wrMassBranch,SRmassBranch,RmassBranch,correctMassBranch,incorrectMassBranch,leadMassBranch,subleadMassBranch,weightBranch, weightBranch2])
 	print(dataArray.shape)
 	np.save(file+".npy",dataArray)
