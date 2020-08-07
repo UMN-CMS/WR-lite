@@ -1,7 +1,7 @@
 """
 Extracts data saved from the main root exectuion into a single file.
-The five file names are "mlData1.txt.root", "mlData2.txt.root",
-"mlData3.txt.root", "mlData4.txt.root", and "mlData5.txt.root".
+The five file names are "ml1.txt", "ml2.txt.",
+"ml3.txt", "ml4.txt", and "ml5.txt".
 Simply change these strings to change the names of the files used.
 The data is saved as mlData.npy.
 
@@ -18,7 +18,7 @@ import numpy as np
 
 def main():
     
-    data = np.loadtxt("mlData1.txt.root")
+    data = np.loadtxt("ml.txt")
         
     dataSets=[]
     previous=[]
@@ -61,7 +61,7 @@ def main():
     currentN=0.0
     currentWR=0.0
     
-    data = np.loadtxt("mlData2.txt.root")
+    data = np.loadtxt("ml2.txt")
     print(data.shape)
     
     for x in range(data.shape[0]):
@@ -95,7 +95,7 @@ def main():
     currentN=0.0
     currentWR=0.0
     
-    data = np.loadtxt("mlData3.txt.root")
+    data = np.loadtxt("ml3.txt")
     print(data.shape)
     
     for x in range(data.shape[0]):
@@ -130,7 +130,7 @@ def main():
     currentN=0.0
     currentWR=0.0
     
-    data = np.loadtxt("mlData4.txt.root")
+    data = np.loadtxt("ml4.txt")
     print(data.shape)
     
     for x in range(data.shape[0]):
@@ -165,7 +165,7 @@ def main():
     currentWR=0.0
     
     
-    data = np.loadtxt("mlData5.txt.root")
+    data = np.loadtxt("ml5.txt")
     print(data.shape)
     
     for x in range(data.shape[0]):
