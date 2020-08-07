@@ -24,6 +24,7 @@ from sklearn.model_selection import train_test_split
 
 
 def main():
+    
     #Set seeds for reproducibility
     os.environ["PYTHONHASHSEED"] = "0"
     np.random.seed(42)
@@ -31,7 +32,7 @@ def main():
     tf.random.set_seed(3)
     
     #Load data
-    data = np.load("mlDataV2.npy")
+    data = np.load("mlData.npy")
     print(data.shape)
     
     #Trainin parameters placed up here for convenience
@@ -128,7 +129,6 @@ def main():
                 [2000,600],[2000,1900],[2000,800],[2000,1000],[2000,1200],[2000,1400],
                 [2000,1600],[2000,1800]]
     
-    dataSets=[] #Will hold two arrays, one for each training set
     temp1=[] #Will become the resolved training set
     temp2=[] #Will become the super resolved training set
     weight1=[]
@@ -140,7 +140,9 @@ def main():
         else:
             temp2.append(dataSets[x])
             weight2.append(weights[x])
-    weights=[np.concatenate(weight1), np.concatenate(weight2)]
+    weightsData=[np.concatenate(weight1), np.concatenate(weight2)]
+    dataSets=[] #Will hold two arrays, one for each training set
+    
     dataSets.append(np.concatenate(temp1))
     dataSets.append(np.concatenate(temp2))
 
@@ -149,7 +151,7 @@ def main():
     
     for setNumber in [0,1]: #Train both resolved and super resolved
         dataNormed = np.copy(dataSets[setNumber].T)
-        weight = weights[setNumber].T
+        weight = weightsData[setNumber].T
         for x in range(len(weight)):
             weight[x]=abs(dataNormed[6,x]-dataNormed[13,x])/weight[x]
             if(x<20):
@@ -189,13 +191,17 @@ def main():
         
             
         inputData=dataNormed[:dims].T
-        outputData=dataNormed[dims].T
+        outputData=dataNormed[dims:].T
         
         #Randomly pick an 80-20 train-validation split
         trainIn, valIn, trainOut, valOut = train_test_split(inputData,
                                                             outputData,
                                                             test_size=0.2,
                                                             random_state=42)
+        
+        sampleWeights = trainOut.T[1,:]
+        trainOut = trainOut.T[0,:].T
+        valOut = valOut.T[0,:].T
         
         tf.random.set_seed(1000) #Set seed
         
@@ -232,8 +238,10 @@ def main():
         for x in range(cycles):
             model.compile(optimizer=tf.keras.optimizers.Adam(0.001 * (10**(-x)),
                           amsgrad=True),
-                          loss=tf.keras.losses.BinaryCrossentropy())        
-        
+                          loss=tf.keras.losses.BinaryCrossentropy(),
+                          metrics=["accuracy", "mse"])
+            model.summary()
+            
             model.fit(
                 trainIn,
                 trainOut,
@@ -241,7 +249,8 @@ def main():
                     valIn,
                     valOut),
                 epochs=epochs,
-                batch_size=32)
+                batch_size=32,
+                sample_weight=sampleWeights)
         
         #Extract weights and biases
         weights = []
@@ -266,3 +275,6 @@ def main():
         #Save normalization information to a text file
         np.savetxt(setNames[setNumber]+"/normInfo.txt",
                    normInfo, delimiter=",")
+
+if(__name__=="__main__"):
+    main()

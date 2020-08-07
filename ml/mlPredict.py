@@ -50,7 +50,7 @@ def main():
     matplotlib.rc('font', **font)
     
     #Collect data
-    data = np.load("mlDataV2.npy")
+    data = np.load("mlData.npy")
     print(data.shape)
     
     dataSets=[]
@@ -108,7 +108,7 @@ def main():
                 [2000,1600],[2000,1800]]
     
     #Names of folders with the neural networks    
-    setNamesShort = ["resolvedWeighted3", "superResolvedWeighted3"] 
+    setNamesShort = ["Resolved", "SuperResolved"] 
     #Names of networks to print on graphs
     setNamesPrint= ["resolved", "super resolved"] 
     base = 2     
@@ -211,6 +211,7 @@ def main():
             sigma = np.sqrt(np.sum(correctLeptonsN**2)/len(correctLeptonsN) - (np.sum(correctLeptonsN)/len(correctLeptonsN))**2)
             
             #Plot of metric for individual mass point
+            """
             plt.figure(figsize=(9,6))
             plt.hist(np.power(base, -np.array(metricTemp)/sigma), bins=50)
             plt.title("Metric of " + titleNames + "\nfor "+ setNames[setNumber])
@@ -223,7 +224,7 @@ def main():
             plt.tight_layout()
             plt.savefig("metric/Metric_of_" + names + "_for_masses_"+ setNames[setNumber]+ "_base_"+str(base)+"_cummulative.png")
             plt.show()
-
+            """
             xVals.append(massSplits[setNumber][0])
             yVals.append(massSplits[setNumber][1])
 
@@ -334,7 +335,7 @@ def main():
                     metric[n,x] = metric[x-80, x]  
                     metric2[n,x] = metric2[x-80, x]
             #Extrapolate down below second diagonal
-            if(x>22 and x<102):
+            if(x>22 and x<=102):
                 if(x%4==2):   
                     for n in range(2, int((x-2)/4-2)):
                         accuracies[n,x] = accuracies[ int((x-2)/4-2), x]
@@ -350,7 +351,7 @@ def main():
         for n in range(50):
             for x in range(3, 122):
                 for y in range(2,184):
-                    if((x%20!=2 or y%20!=2) and not (x>120 and y==x-80) and not( x>22 and x<102 and y ==ceil((x-2)/4-3)) and not y==x+50 and not y>x+59 and not(x>2 and x<22 and y==2)):
+                    if((x%20!=2 or y%20!=2 or y<x+25) and not (x>120 and y==x-80) and not( x>22 and x<102 and y ==ceil((x-2)/4-3)) and not y==x+50 and not y>x+59 and not(x>2 and x<22 and y==2)):
                         if(y!=2):
                             accuracies[y,x]=(accuracies[y,x-1]+accuracies[y,x+1]+accuracies[y+1,x]+accuracies[y-1,x])/4
                             metric[y,x]=(metric[y,x-1]+metric[y,x+1]+metric[y+1,x]+metric[y-1,x])/4
@@ -358,7 +359,7 @@ def main():
                         else:
                             accuracies[y,x]=(accuracies[y,x-1]+accuracies[y,x+1]+accuracies[y+1,x])/3
                             metric[y,x]=(metric[y,x-1]+metric[y,x+1]+metric[y+1,x])/3
-                            metric2[y,x]=(metric2[y,x-1]+metric2[y,x+1]+metric2[y+1,x])/3
+                            metric2[y,x]=(metric2[y,x-1]+metric2[y,x+1]+metric2[y+1,x])/3 
 
 
         #Make plots
