@@ -25,6 +25,7 @@ public:
 	bool mixedLeptons;
 	bool passedElectronReco;
 	bool passedMuonReco;
+	bool sameSignElectrons;
 	bool mixedGen;
 	bool electronGen;
 	bool muonGen;

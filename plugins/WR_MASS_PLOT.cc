@@ -404,7 +404,7 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			
 			for(std::vector<pat::Electron>::const_iterator iElectron = highElectrons->begin(); iElectron != highElectrons->end(); iElectron++) {
 				if(fabs(iElectron->eta()) > 2.4) continue;
-				if(iElectron->pt() < 53 ) continue;
+				if(iElectron->pt() < 20 ) continue;
 				const vid::CutFlowResult* vidResult =  iElectron->userData<vid::CutFlowResult>("heepElectronID_HEEPV70");
 				if(background && vidResult == NULL) {
 					std::cout << "ERROR CANNOT FIND ELECTRON VID RESULTS" << std::endl;
@@ -440,29 +440,12 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}
 	  
 	  	    //If background, check that there are two jets and two electrons, otherwise check that particles match gen particles
-			if((leadJet != 0 && subleadJet != 0 && leadElectron != 0 && subleadElectron != 0 && el1Match != 0 && el2Match != 0 && q1Match != 0 && q2Match != 0) ||
-				(background && leadJet != 0 && subleadJet != 0 && leadElectron != 0 && subleadElectron != 0)){
-				std::cout << "lead jet" << leadJet->p4() << ", "<< leadJet->pt() << std::endl;
-				std::cout << "sublead jet" << subleadJet->p4() << ", "<< subleadJet->pt() << std::endl;
+			if((leadElectron != 0 && subleadElectron != 0 && el1Match != 0 && el2Match != 0) ||
+				(background && leadElectron != 0 && subleadElectron != 0)){
 				std::cout << "lead lepton" << leadElectron->p4() << ", "<< leadElectron->pt() << std::endl;
 				std::cout << "sublead lepton" << subleadElectron->p4() << ", "<< subleadElectron->pt() << std::endl;
-				//calculate boosts
-				combinedJetsP4 = subleadJet->p4() + leadJet->p4();
-				std::cout << "combined" << combinedJetsP4 << std::endl;
-				allParticlesP4Boost = -(combinedJetsP4 + leadElectron->p4() + subleadElectron->p4());
-				jetsPlusLeadLeptonP4Boost = -(combinedJetsP4 + leadElectron->p4());
-				jetsPlusSubLeptonP4Boost = -(combinedJetsP4 + subleadElectron->p4());
-				//boosts of gen particles
-				if(!background){
-					lepton1P4 = matchedElectronL1->p4();
-					lepton2P4 = matchedElectron->p4();
-					
-					jetsPlusLepton1P4Boost = -(combinedJetsP4 + lepton1P4);
-					jetsPlusLepton2P4Boost = -(combinedJetsP4 + lepton2P4);
-					lepton1P4Boost = -(lepton1P4);
-					lepton2P4Boost = -(lepton2P4);
-				}
-				
+				if(leadElectron->pdgId() == subleadElectron->pdgId()) myRECOevent.sameSignElectrons = true;
+				else myRECOevent.sameSignElectrons = false;
 				
 				myRECOevent.passedElectronReco = true;
 				
@@ -473,7 +456,7 @@ WR_MASS_PLOT::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 				myRECOevent.leadJetRecoPt = leadJet->pt();
 
 				myRECOevent.subJetRecoEta = subleadJet->eta();
-				myRECOevent.subJetRecoPhi = subleadJet->phi();
+			 	myRECOevent.subJetRecoPhi = subleadJet->phi();
 				myRECOevent.subJetRecoMass = subleadJet->p4().mass();
 				myRECOevent.subJetRecoPt = subleadJet->pt();
 

@@ -14,6 +14,7 @@ eventBits::eventBits() {
 	twoMuons = false;
 	mixedLeptons = false;
 	passedElectronReco = false;
+        sameSignElectrons = false;
 	passedMuonReco = false;
 	mixedGen = false;
 	electronGen = false;
@@ -281,6 +282,7 @@ void eventBits::clear() {
 	twoMuons = false;
 	mixedLeptons = false;
 	passedElectronReco = false;
+        sameSignElectrons = false;
 	passedMuonReco = false;
 	mixedGen = false;
 	electronGen = false;

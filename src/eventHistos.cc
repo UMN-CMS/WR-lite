@@ -200,6 +200,8 @@ void eventHistos::book(TFileDirectory histoFolder) {
 	m_jetjetMassHisto = m_histoFolder.make<TH1D>("jetjetMassHisto" , "Lead Jet + Sublead Jet Mass" , 50 , 0 , 4000 );
 	m_jetjetMassHisto->GetXaxis()-> SetTitle("jet + jet (GeV)");
 	
+	m_ElElMass_sameSign =  m_histoFolder.make<TH1D>("elelSameSignMassHisto" , "m_{ll} (GeV)" , 150 , 50 , 150 );
+	m_ElElMass_oppoSign =  m_histoFolder.make<TH1D>("elelOppoSignMassHisto" , "m_{ll} (GeV)" , 150 , 50 , 150 );
 	//2D
 	
 	m_subLeadMuonHisto = m_histoFolder.make<TH2D>("subLeadMuonHisto" , "Sublead Lepton" , 100, 0, 2500, 100 , 0 , 3000 );
@@ -665,6 +667,11 @@ void eventHistos::fill(eventBits& event) {
 	} else { // two electrons or two muons
 		if(event.passedElectronReco){ // pass Reco
 			m_leptonHisto->Fill("two Electrons", event.eventWeight);
+			if(event.sameSignElectrons){
+				m_ElElMass_sameSign->Fill(event.leadElectronsubElectronRecoMass, event.eventWeight);
+			}else{
+				m_ElElMass_oppoSign->Fill(event.leadElectronsubElectronRecoMass, event.eventWeight);
+			}
 			if(event.failedGenPtEta){
 				m_failGenleptonHisto->Fill("two Electrons", event.eventWeight);
 			} else if(event.mixedGen){
